@@ -1,0 +1,12 @@
+CXX=g++
+CXXFLAGS= -Wall -g
+
+main:main.o
+	$(CXX) $(CXXFLAGS) -o main main.o
+main.o: 
+	$(CXX) $(CXXFLAGS) -c main.cpp
+	
+.PHONY: clean
+# Erase all hex, map, object, and elf files.
+clean :
+	$(RM) *.hex *.map *.o *.elf *.dep *.dis
