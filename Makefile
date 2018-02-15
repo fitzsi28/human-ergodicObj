@@ -1,12 +1,11 @@
 CXX=g++
 CXXFLAGS= -std=c++11 -Wall -g
 
-main:main.o rk4_int.o
-	$(CXX) $(CXXFLAGS) -o main main.o rk4_int.o
-main.o: rk4_int.hpp
-	$(CXX) $(CXXFLAGS) -c main.cpp rk4_int.cpp
-rk4_int.o: rk4_int.hpp
-	$(CXX) $(CXXFLAGS) -c rk4_int.cpp
+main:main.o 
+	$(CXX) $(CXXFLAGS) -o main main.o 
+main.o: rk4_int.hpp cartpend.hpp
+	$(CXX) $(CXXFLAGS) -c main.cpp 
+
 .PHONY: clean
 # Erase all hex, map, object, and elf files.
 clean :
