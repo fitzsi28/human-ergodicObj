@@ -1,29 +1,56 @@
 #ifndef CARTPEND_HPP
 #define CARTPEND_HPP
 #include<armadillo>
+#include"rk4_int.hpp"
 
+const double PI = 3.1415926535987;
 
 class CartPend {
-    float m, B, g, h;
+    double m, B, g, h, dt;
     public:
+        double tcurr=0.0;
         arma::vec Xcurr, Ucurr;
-        CartPend (float, float,float,float);
+        CartPend (double, double,double,double,double);
+        arma::vec proj_func (const arma::vec& x);
         arma::vec f(const arma::vec& x, const arma::vec& u);
+        arma::vec RK4_int(const arma::vec& x, const arma::vec& u);
+        void step(void);
         
 };
 
-CartPend::CartPend (float a, float b, float c, float d){
-    m = a; B = b; g = c; h=d;
+CartPend::CartPend (double a, double b, double c, double d, double _dt){
+    m = a; B = b; g = c; h=d;//system parameters
+    dt = _dt;//step size
 }
 
+arma::vec CartPend::proj_func (const arma::vec& x){
+    arma::vec xwrap=x;
+    xwrap(0) = fmod(x(0)+PI, 2*PI);
+    if (xwrap(0) < 0.0) xwrap(0) = xwrap(0) + 2*PI;
+    xwrap(0) = xwrap(0) - PI;
+    return xwrap;
+}
 arma::vec CartPend::f(const arma::vec& x, const arma::vec& u){
-    //const float m=0.1, B = 0.01, g = 9.81, h=2.0;//System Parameters
     arma::vec xdot = {x(1),
-                      g/(h*sin(x(0))) + B*x(1)/(m*h*h*sin(x(0))*sin(x(0)))-x(1)*x(1)/tan(x(0)),
+                      g/h*sin(x(0)) + B*x(1)/(m*h*h)-u(0)*cos(x(0))/h,
                       x(3),
-                      g/tan(x(0))+B*x(1)/(m*h*tan(x(0))*sin(x(0)))-h*x(1)*x(1)/sin(x(0))};
+                      u(0)};;
     return xdot;
 } 
+
+arma::vec CartPend::RK4_int(const arma::vec& x, const arma::vec& u){
+    arma::vec k1, k2, k3, k4;
+    k1 = f(x,u)*dt; 
+    k2 = f(x+k1/2, u)*dt; 
+    k3 = f(x+k2/2, u)*dt;
+    k4 = f(x+k3, u)*dt;
+    return (x + (k1/6)+(k2/3)+(k3/3)+(k4/6));
+ }
+
+void CartPend::step(){
+    Xcurr = RK4_int(Xcurr,Ucurr);
+    tcurr = tcurr+dt;
+}
 
 
 #endif

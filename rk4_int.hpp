@@ -11,6 +11,6 @@ template <class T> arma::vec RK4_step(T sys, const arma::vec& x, const arma::vec
     k4 = sys.f(x+k3, u)*dt;
     return x + (k1/6)+(k2/3)+(k3/3)+(k4/6);
     
-};//example odeintRK4 (&dynamics, X, U,0.01)
+};
 
 #endif
