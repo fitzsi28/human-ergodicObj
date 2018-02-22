@@ -1,10 +1,13 @@
-#ifndef CARTPEND_HPP
-#define CARTPEND_HPP
+#ifndef SAC_HPP
+#define SAC_HPP
 #include<armadillo>
 
-template <class sys>
+template <class system, class objective>
 class sac {
-    //from sys use f, proj_func, dldx, dfdx, cost?, l?
+
+    sac(system& sys, objective& cost);
+    //from sys use f, proj_func, dfdx
+    //from cost use l, dldx, costcalc 
     //algorithm parameters
     //gamma; delt_init;beta;tcalc;kmax;
     //required functions for calc

@@ -5,6 +5,7 @@
 using namespace std;
 
 #include"cartpend.hpp"
+#include"error_cost.hpp"
 
 int main()
 {   ofstream myfile;

@@ -12,14 +12,15 @@ class CartPend {
         arma::vec Xcurr, Ucurr;
         CartPend (double, double,double,double,double);
         arma::vec proj_func (const arma::vec& x);
-        arma::vec f(const arma::vec& x, const arma::vec& u);
+        inline arma::vec f(const arma::vec& x, const arma::vec& u);
+        inline arma::mat dfdx(const arma::vec& x, const arma::vec& u);
         arma::vec RK4_int(const arma::vec& x, const arma::vec& u);
         void step(void);
         
 };
 
-CartPend::CartPend (double a, double b, double c, double d, double _dt){
-    m = a; B = b; g = c; h=d;//system parameters
+CartPend::CartPend (double _m, double _B, double _g, double _h, double _dt){
+    m = _m; B = _B; g = _g; h=_h;//system parameters
     dt = _dt;//step size
 }
 
@@ -30,13 +31,23 @@ arma::vec CartPend::proj_func (const arma::vec& x){
     xwrap(0) = xwrap(0) - PI;
     return xwrap;
 }
-arma::vec CartPend::f(const arma::vec& x, const arma::vec& u){
+inline arma::vec CartPend::f(const arma::vec& x, const arma::vec& u){
     arma::vec xdot = {x(1),
                       g/h*sin(x(0)) + B*x(1)/(m*h*h)-u(0)*cos(x(0))/h,
                       x(3),
                       u(0)};;
     return xdot;
-} 
+}; 
+
+inline arma::mat CartPend::dfdx(const arma::vec& x, const arma::vec& u){
+    arma::mat A = {
+        {0,1,0,0},
+        {g/h*cos(x(0))+ u(0)*sin(x(0))/h, B/(m*h*h),0,0},
+        {0,0,0,1},
+        {0,0,0,0}
+    };
+    return A;
+}; 
 
 arma::vec CartPend::RK4_int(const arma::vec& x, const arma::vec& u){
     arma::vec k1, k2, k3, k4;
