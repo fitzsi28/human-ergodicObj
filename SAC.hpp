@@ -4,14 +4,27 @@
 
 template <class system, class objective>
 class sac {
-
-    sac(system& sys, objective& cost);
-    //from sys use f, proj_func, dfdx
-    //from cost use l, dldx, costcalc 
+    system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx
+    objective* cost; //from cost use cost->l, cost->dldx, cost->costcalc
+    public:
+    sac(system *_sys, objective *_cost);
+    
     //algorithm parameters
-    //gamma; delt_init;beta;tcalc;kmax;
+    double gamma = -5; double delt_init = 0.2; double beta = 0.55;
+    double tcalc = 0.0; int kmax = 6; double T = 1.0; double umax = 20;
     //required functions for calc
-    //xforward; rhobackward; costcalc;saturation; uInterval; MinDisc;
+    //xforward; rhobackward;saturation; uInterval; MinDisc;
+    arma::mat xforward(const arma::vec& u);
+    arma::mat rhoback(const arma::mat& xsol);
+    arma::vec saturation(const arma::vec& u);
+    inline double * uInterval(double controlInt[], double simInt[]){
+        double interval [2] = simInt;
+        if(controlInt[0]>=simInt[0]) interval[0] = controlInt[0];
+        else if (controlInt[1]<=simInt[1]) interval[1] = controlInt[1];
+        return interval;
+        };
+    
+    
 
 };
 

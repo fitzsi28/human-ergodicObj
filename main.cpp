@@ -6,11 +6,17 @@ using namespace std;
 
 #include"cartpend.hpp"
 #include"error_cost.hpp"
+#include"SAC.hpp"
 
 int main()
 {   ofstream myfile;
     myfile.open ("test.csv");
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
+    arma::mat Q = arma::eye(4,4);
+    arma::mat R = arma::eye(1,1);
+    arma::vec xd = arma::ones(4);
+    errorcost<CartPend> cost (Q,R,xd,&syst1);
+    sac<CartPend,errorcost<CartPend>> sacsys (&syst1,&cost);
     syst1.Ucurr = {0.0}; 
     syst1.Xcurr = {3.0, 0.0,0.0,0.0};
     myfile<<"time,theta,thetadot,x,xdot,u\n";
@@ -23,6 +29,7 @@ int main()
     }
        
     myfile.close();
+    cout<<cost.l(syst1.Xcurr,syst1.Ucurr);
 }
 
 
