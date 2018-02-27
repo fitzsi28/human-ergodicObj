@@ -1,7 +1,7 @@
 #ifndef ERRORCOST_HPP
 #define ERRORCOST_HPP
 #include<armadillo>
-#include <iostream>
+
 
 class CartPend;
 
