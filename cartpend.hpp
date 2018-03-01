@@ -14,7 +14,6 @@ class CartPend {
         arma::vec proj_func (const arma::vec& x);
         inline arma::vec f(const arma::vec& x, const arma::vec& u);
         inline arma::mat dfdx(const arma::vec& x, const arma::vec& u);
-        arma::vec RK4_int(const arma::vec& x, const arma::vec& u);
         void step(void);
         
 };
@@ -49,17 +48,8 @@ inline arma::mat CartPend::dfdx(const arma::vec& x, const arma::vec& u){
     return A;
 }; 
 
-arma::vec CartPend::RK4_int(const arma::vec& x, const arma::vec& u){
-    arma::vec k1, k2, k3, k4;
-    k1 = f(x,u)*dt; 
-    k2 = f(x+k1/2, u)*dt; 
-    k3 = f(x+k2/2, u)*dt;
-    k4 = f(x+k3, u)*dt;
-    return (x + (k1/6)+(k2/3)+(k3/3)+(k4/6));
- }
-
 void CartPend::step(){
-    Xcurr = RK4_int(Xcurr,Ucurr);
+    Xcurr = RK4_step<CartPend>(this,Xcurr,Ucurr,dt);
     tcurr = tcurr+dt;
 }
 

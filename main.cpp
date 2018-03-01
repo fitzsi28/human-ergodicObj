@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <fstream>
 #include<math.h>
 #include<armadillo>
@@ -7,6 +8,7 @@ using namespace std;
 #include"cartpend.hpp"
 #include"error_cost.hpp"
 #include"SAC.hpp"
+#include"rk4_int.hpp"
 
 int main()
 {   ofstream myfile;
@@ -34,8 +36,6 @@ int main()
     timeInt int3;
     int3 = sacsys.uInterval(int1,int2);
     cout<<int3.start<<", "<<int3.end<<"\n";
-     cout<<sacsys.saturation(syst1.Ucurr)<<"\n";
+     cout<<RK4_step<CartPend>(&syst1, syst1.Xcurr, syst1.Ucurr,0.01)<<"\n";
 }
-
-
 
