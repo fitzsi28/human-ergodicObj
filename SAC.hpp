@@ -12,15 +12,21 @@ template <class system, class objective>
 class sac {
     system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx
     objective* cost; //from cost use cost->l, cost->dldx, cost->costcalc
+    
     public:
-    sac(system *_sys, objective *_cost){
-        sys = _sys; cost=_cost;
-    };
     
     //algorithm parameters
     double gamma = -5; double delt_init = 0.2; double beta = 0.55;
-    double tcalc = 0.0; int kmax = 6; double T = 1.0; 
+    double tcalc = 0.0; int kmax = 6; double T = 0.05; 
+    int T_index;
     arma::vec umax = {20};
+    
+    sac(system *_sys, objective *_cost){
+        sys = _sys; cost=_cost;
+        T_index = T/sys->dt;
+    };
+    
+    
     //required functions for calc
     //xforward; rhobackward; MinDisc;
     arma::mat xforward(const arma::vec& u);
@@ -47,5 +53,17 @@ class sac {
     
 
 };
+
+template <class system, class objective>
+arma::mat sac<system,objective>::xforward(const arma::vec& u){
+    arma::mat xsol = arma::zeros<arma::mat>(4,T_index);
+    arma::vec x0 = sys->Xcurr;
+   for(int i = 0; i<T_index;i++){
+       xsol.col(i)=x0;
+       x0 = RK4_step<CartPend>(sys,x0,u,sys->dt);
+   }
+    
+return xsol;
+}
 
 #endif

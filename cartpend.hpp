@@ -6,8 +6,9 @@
 const double PI = 3.1415926535987;
 
 class CartPend {
-    double m, B, g, h, dt;
+    double m, B, g, h;
     public:
+        double dt;
         double tcurr=0.0;
         arma::vec Xcurr, Ucurr;
         CartPend (double, double,double,double,double);
