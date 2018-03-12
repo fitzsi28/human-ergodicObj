@@ -8,10 +8,30 @@ struct timeInt{
     double end;
 };
 
+struct xupair{
+    arma::vec x;
+    arma::vec u;
+};
+
+/*
+template<class system, class objective>
+class rhoclass{
+    system* sys;
+    objective* cost;
+    //arma::vec rho;
+    public:
+    rhoclass(system *_sys, objective *_cost){
+    sys = _sys; cost=_cost;  
+    }
+    
+    
+};*/
+
 template <class system, class objective>
 class sac {
     system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx
     objective* cost; //from cost use cost->l, cost->dldx, cost->costcalc
+    //rhoclass<system,objective> rhodot;//(sys,cost);
     
     public:
     
@@ -24,14 +44,18 @@ class sac {
     sac(system *_sys, objective *_cost){
         sys = _sys; cost=_cost;
         T_index = T/sys->dt;
+        
     };
     
     
     //required functions for calc
     //xforward; rhobackward; MinDisc;
     arma::mat xforward(const arma::vec& u);
-    arma::mat rhoback(const arma::mat& xsol);
-    
+    arma::mat rhoback(const arma::mat& xsol,const arma::vec& u);
+        inline arma::vec f(const arma::vec& rho, xupair pair){
+            return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;
+            }//f for rho backwards sim
+            
     arma::vec saturation(const arma::vec& u){
         arma::vec usat; usat.zeros(u.n_rows);
         for (int i = 0; i<u.n_rows; i++){
@@ -60,10 +84,27 @@ arma::mat sac<system,objective>::xforward(const arma::vec& u){
     arma::vec x0 = sys->Xcurr;
    for(int i = 0; i<T_index;i++){
        xsol.col(i)=x0;
-       x0 = RK4_step<CartPend>(sys,x0,u,sys->dt);
+       x0 = RK4_step<system,const arma::vec&>(sys,x0,u,sys->dt);
    }
     
 return xsol;
 }
+
+template <class system, class objective>
+arma::mat sac<system,objective>::rhoback(const arma::mat& xsol,const arma::vec& u){
+    arma::mat rhosol = arma::zeros<arma::mat>(4,T_index);
+    arma::vec rho0 = sys->Xcurr;
+    xupair current;
+    rho0.zeros();
+   for(int i = T_index-1; i>0;i--){
+       rhosol.col(i)=rho0;
+       current.x =xsol.col(i);
+       current.u = u;
+       rho0 = RK4_step<sac,xupair>(this,rho0,current,sys->dt);
+   }
+    
+return rhosol;
+}
+
 
 #endif

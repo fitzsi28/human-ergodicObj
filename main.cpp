@@ -37,6 +37,8 @@ int main()
     timeInt int3;
     int3 = sacsys.uInterval(int1,int2);
     //cout<<int3.start<<", "<<int3.end<<"\n";
-     cout<<sacsys.xforward(syst1.Ucurr)<<"\n";
+    arma::mat xsol; xsol=sacsys.xforward(syst1.Ucurr);
+    cout<<xsol<<"\n";
+    cout<<sacsys.rhoback(xsol,syst1.Ucurr);
 }
 

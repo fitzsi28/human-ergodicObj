@@ -3,7 +3,7 @@
 #include<armadillo>
 #include"cartpend.hpp"
 
-template <class T> arma::vec RK4_step(T *sys, const arma::vec& x, const arma::vec& u, double dt){
+template <class T, class input> arma::vec RK4_step(T *sys, const arma::vec& x, input u, double dt){
     arma::vec k1, k2, k3, k4;
     k1 = sys->f(x,u)*dt; 
     k2 = sys->f(x+k1/2, u)*dt; 
