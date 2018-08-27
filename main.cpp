@@ -22,14 +22,14 @@ int main()
     syst1.Ucurr = {0.0}; 
     syst1.Xcurr = {3.0, 0.0,0.0,0.0};
     myfile<<"time,theta,thetadot,x,xdot,u\n";
- /*
-    while (syst1.tcurr<5.0){
+ 
+  /*  while (syst1.tcurr<5.0){
     myfile<<syst1.tcurr<<",";
     myfile<<syst1.Xcurr(0)<<","<<syst1.Xcurr(1)<<",";
     myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
     myfile<<syst1.Ucurr(0)<<"\n";
     syst1.step();
-    }*/
+    } */
        
     myfile.close();
     double int1[2]={0.1, 0.2};
@@ -37,8 +37,12 @@ int main()
     timeInt int3;
     int3 = sacsys.uInterval(int1,int2);
     //cout<<int3.start<<", "<<int3.end<<"\n";
-    arma::mat xsol; xsol=sacsys.xforward(syst1.Ucurr);
-    cout<<xsol<<"\n";
-    cout<<sacsys.rhoback(xsol,syst1.Ucurr);
+    arma::mat xsol; 
+    arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
+    xsol=sacsys.xforward(unom);
+    //cout<<xsol<<"\n";
+    //cout<<sacsys.rhoback(xsol,unom);
+    SACaction u2 = sacsys.SAC_calc(syst1.Xcurr,unom);
+    cout<<"\n"<<u2.u;
 }
 

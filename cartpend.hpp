@@ -15,6 +15,7 @@ class CartPend {
         arma::vec proj_func (const arma::vec& x);
         inline arma::vec f(const arma::vec& x, const arma::vec& u);
         inline arma::mat dfdx(const arma::vec& x, const arma::vec& u);
+        inline arma::vec hx(const arma::vec& x);
         void step(void);
         
 };
@@ -47,6 +48,16 @@ inline arma::mat CartPend::dfdx(const arma::vec& x, const arma::vec& u){
         {0,0,0,0}
     };
     return A;
+}; 
+
+inline arma::vec CartPend::hx(const arma::vec& x){
+    arma::vec H = {
+        {0},
+        {-cos(x(0))/h},
+        {0},
+        {1}
+    };
+    return H;
 }; 
 
 void CartPend::step(){
