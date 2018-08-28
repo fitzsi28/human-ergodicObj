@@ -29,7 +29,7 @@ class errorcost {
             double J1 = 0.0;
             for (int i = 0; i<x.n_cols; i++){
                 xproj = sys->proj_func(x.col(i));
-                J1+=l(x.col(i),u.col(i));
+                J1+=l(xproj,u.col(i));
             }
             return J1;
         }

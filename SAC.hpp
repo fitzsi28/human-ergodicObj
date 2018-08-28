@@ -28,8 +28,8 @@ class sac {
     public:
     
     //algorithm parameters
-    double gamma = -5; double delt_init = 0.2; double beta = 0.55;
-    double tcalc = 0.0; int kmax = 6; double T = 1.0; 
+    double gamma = -5; double delt_init = 0.5; double beta = 0.55;
+    double tcalc = 0.0; int kmax = 6; double T = 0.1; 
     int T_index;
     arma::vec umax = {20};
     arma::mat ulist;
@@ -65,7 +65,8 @@ class sac {
         arma::mat usol = ulist;
         for(int i = 0; i<T_index;i++){
             if(sys->tcurr+(double)i*sys->dt > ut.tau.start && sys->tcurr+(double)i*sys->dt < ut.tau.end ){
-                usol.col(i) = ut.u;} //cout<<i<<" "<<ut.u;} 
+                usol.col(i) = ut.u;//cout<<i<<" "<<ut.u;
+                } 
          }
     return usol;}
     
@@ -97,10 +98,12 @@ SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::
         Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
         usched.col(i) = (Lam +cost->R).i()*(Lam*u1.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
         dJdlam = rhosol.col(i).t()*(sys->f(xsol.col(i),usched.col(i))-sys->f(xsol.col(i),u1.col(i)));
+        //cout<<dJdlam<<" ";
         Jtau.col(i) =arma::norm(usched.col(i))+dJdlam;//+pow((double)i*sys->dt,beta);
+        //cout<<Jtau.col(i);
     }
     tautemp = Jtau.index_min();
-    //cout<<sys->tcurr+(sys->dt*(double)tautemp);
+    //cout<<" index "<<usched(tautemp);
     //ustar.u=usched.col(0);
     ustar.u=saturation(usched.col(tautemp));
     int k = 0; J1new = 1000*J1init;
@@ -113,6 +116,7 @@ SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::
         J1new = cost->calc_cost(xsol,utemp);
         k++;}
     ulist = utemp;
+    //cout<<"u "<<ulist;
     return ustar;
     }
 //forward simulation of x
@@ -139,7 +143,7 @@ arma::mat sac<system,objective>::rhoback(const arma::mat& xsol,const arma::mat& 
        rhosol.col(i)=rho0;
        current.x =xsol.col(i);
        current.u = u.col(i);
-       rho0 = RK4_step<sac,xupair>(this,rho0,current,sys->dt);
+       rho0 = RK4_step<sac,xupair>(this,rho0,current,-1.0*sys->dt);
    }
     
 return rhosol;
