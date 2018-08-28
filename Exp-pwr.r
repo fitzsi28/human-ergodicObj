@@ -1,0 +1,15 @@
+options(contrasts=c("contr.sum","contr.poly"))
+library(pwr)
+#sink("data/two-wayanova-2stage.txt")
+#data = read.csv("data/multisubject-2stage.csv")
+sink("/home/kt-fitz/human-ergodicObj/corr-power.txt")
+
+cat(" Power Analysis for Correlation of matching tasks\n")
+print(pwr.r.test(r= 0.3,sig.level=0.05,power=0.9))
+cat(" Power Analysis for Correlation of drawing task\n")
+print(pwr.r.test(r= 0.5,sig.level=0.05,power=0.9))
+cat(" Power Analysis for Information Added by any assistance\n")
+print(pwr.t.test(d= 0.5,sig.level=0.05,power=0.95,type = "paired"))
+cat(" Power Analysis for Comparison of Virtual Fixtures and Ergodic control\n")
+print(pwr.t.test(d= 0.5,sig.level=0.05,power=0.95,type = "two.sample"))
+

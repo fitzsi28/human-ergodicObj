@@ -21,7 +21,7 @@ class CartPend {
 };
 
 CartPend::CartPend (double _m, double _B, double _g, double _h, double _dt){
-    m = _m; B = _B; g = _g; h=_h;//system parameters
+    m = _m; B = -1*_B; g = _g; h=_h;//system parameters
     dt = _dt;//step size
 }
 

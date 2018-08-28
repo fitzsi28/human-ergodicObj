@@ -29,13 +29,15 @@ class sac {
     
     //algorithm parameters
     double gamma = -5; double delt_init = 0.2; double beta = 0.55;
-    double tcalc = 0.0; int kmax = 6; double T = 0.1; 
+    double tcalc = 0.0; int kmax = 6; double T = 1.0; 
     int T_index;
     arma::vec umax = {20};
+    arma::mat ulist;
     
     sac(system *_sys, objective *_cost){
         sys = _sys; cost=_cost;
         T_index = T/sys->dt;
+        ulist = arma::zeros(1,T_index);
         
     };
     
@@ -48,25 +50,24 @@ class sac {
         inline arma::vec f(const arma::vec& rho, xupair pair){
             return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;
             }//f for rho backwards sim
-    //saturation funtion for the control        
+    //saturation function for the control        
     arma::vec saturation(const arma::vec& u){
         arma::vec usat; usat.zeros(u.n_rows);
         for (int i = 0; i<u.n_rows; i++){
-                std::cout<<usat(i)<<"\n";
                 if(u(i) > umax(i)) usat(i) = umax(i);
-                else if(u(i) < -umax(i)) usat(i) = -umax(i);
+                else if(u(i) < -umax(i)){ usat(i) = -umax(i);}
                 else usat(i) = u(i);
             };
-            return usat;
-    }
-    //restricting the application interval of ustar to within the next time window
-    inline timeInt uInterval(double controlInt[], double simInt[]){
-        timeInt interval;
-        interval.start= (*simInt); interval.end = *(simInt+1);
-        if(controlInt[0]>=simInt[0]) interval.start = controlInt[0];
-        else if (controlInt[1]<=simInt[1]) interval.end = controlInt[1];
-        return interval;
-        };
+       return usat;}
+    //incorporating ustar into u matrix and 
+        //restricting the application interval of ustar to within the next time window
+    inline arma::mat uInc(SACaction ut){
+        arma::mat usol = ulist;
+        for(int i = 0; i<T_index;i++){
+            if(sys->tcurr+(double)i*sys->dt > ut.tau.start && sys->tcurr+(double)i*sys->dt < ut.tau.end ){
+                usol.col(i) = ut.u;} //cout<<i<<" "<<ut.u;} 
+         }
+    return usol;}
     
     
 
@@ -74,11 +75,13 @@ class sac {
 //main function for calculating a single SAC control vector
 template <class system, class objective>
 SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::mat& u1){
+    ulist.col(0) = sys->Ucurr;
     SACaction ustar;
     ustar.tau.start = 0; ustar.tau.end = 0; 
     ustar.u = arma::zeros<arma::vec>(size(u1.col(0)));
     arma::uword tautemp;
     arma::mat xsol,rhosol;
+    arma::mat utemp = ulist;
     arma::mat usched = arma::zeros<arma::mat>(1,T_index);
     arma::mat Jtau = arma::zeros<arma::mat>(1,T_index);
     double J1init,J1new,dJmin,alphad,lambda;
@@ -94,25 +97,22 @@ SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::
         Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
         usched.col(i) = (Lam +cost->R).i()*(Lam*u1.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
         dJdlam = rhosol.col(i).t()*(sys->f(xsol.col(i),usched.col(i))-sys->f(xsol.col(i),u1.col(i)));
-        Jtau.col(i) =arma::norm(usched.col(i))+dJdlam+pow(i*sys->dt,beta);
-        //if (Jtau(i)
+        Jtau.col(i) =arma::norm(usched.col(i))+dJdlam;//+pow((double)i*sys->dt,beta);
     }
     tautemp = Jtau.index_min();
-    cout<<sys->tcurr+(sys->dt*(double)tautemp);
+    //cout<<sys->tcurr+(sys->dt*(double)tautemp);
     //ustar.u=usched.col(0);
-    ustar.u=usched.col(tautemp);
-    int k = 0; J1new = 10*J1init;
+    ustar.u=saturation(usched.col(tautemp));
+    int k = 0; J1new = 1000*J1init;
     while(J1new-J1init>dJmin && k<= kmax){
         lambda = delt_init*pow(beta,k);
-        ustar.tau.start = (double)tautemp*sys->dt -(lambda/2);
-        ustar.tau.end = (double)tautemp*sys->dt+(lambda/2);
-        k++;
-    }
-    //Initialize k=0 and J1new = A large number
-    //While loop for finding application duration
-        //lambda = omega^k delta t init
-        //
-    
+        ustar.tau.start = sys->tcurr + (double)tautemp*sys->dt -(lambda/2);
+        ustar.tau.end = sys->tcurr + (double)tautemp*sys->dt+(lambda/2);
+        utemp = uInc(ustar);
+        xsol = xforward(utemp);
+        J1new = cost->calc_cost(xsol,utemp);
+        k++;}
+    ulist = utemp;
     return ustar;
     }
 //forward simulation of x
