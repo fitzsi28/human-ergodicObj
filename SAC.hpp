@@ -29,9 +29,9 @@ class sac {
     
     //algorithm parameters
     double gamma = -5; double delt_init = 0.5; double beta = 0.55;
-    double tcalc = 0.0; int kmax = 6; double T = 0.1; 
+    double tcalc = 0.0; int kmax = 6; double T = 1.0; 
     int T_index;
-    arma::vec umax = {20};
+    arma::vec umax = {25};
     arma::mat ulist;
     
     sac(system *_sys, objective *_cost){

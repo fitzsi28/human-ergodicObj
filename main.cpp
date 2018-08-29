@@ -17,8 +17,9 @@ int main()
     arma::mat Q = {
         {200,0.,0.,0.},
         {0., 1.,0.,0.},
-        {0.,0.,1.,0.},
+        {0.,0.,10.,0.},
         {0.,0.,0.,1.}};
+    
     arma::mat R = 0.3*arma::eye(1,1);
     arma::vec xd = arma::zeros(4);
     arma::vec xwrap;
@@ -27,7 +28,7 @@ int main()
     errorcost<CartPend> cost (Q,R,xd,&syst1);
     sac<CartPend,errorcost<CartPend>> sacsys (&syst1,&cost);
     arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
-    SACaction u2; //= sacsys.SAC_calc(syst1.Xcurr,sacsys.ulist);
+    SACaction u2;
     
     myfile<<"time,theta,thetadot,x,xdot,u\n";
  
@@ -41,8 +42,10 @@ int main()
     myfile<<syst1.Ucurr(0)<<"\n";
     syst1.step();
     u2 = sacsys.SAC_calc(syst1.Xcurr,sacsys.ulist);
-    cout<<"\n"<<syst1.tcurr+syst1.dt<<" "<<u2.tau.start<<" "<<sacsys.ulist(0);
-    syst1.Ucurr = sacsys.ulist(0); //cout<<syst1.Ucurr;
+    //cout<<"\n"<<syst1.tcurr+syst1.dt<<" "<<u2.tau.start<<" "<<sacsys.ulist.col(0);
+    syst1.Ucurr = sacsys.ulist.col(0); //cout<<syst1.Ucurr;
+        for(int i = 0;i<sacsys.ulist.n_cols-1;i++)sacsys.ulist.col(i) = sacsys.ulist.col(i+1);
+        sacsys.ulist.col(sacsys.ulist.n_rows) = arma::zeros(sacsys.ulist.n_rows,1);
     } 
        
     myfile.close();
