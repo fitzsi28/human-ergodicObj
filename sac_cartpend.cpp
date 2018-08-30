@@ -9,6 +9,8 @@ using namespace std;
 #include"error_cost.hpp"
 #include"SAC.hpp"
 #include"rk4_int.hpp"
+arma::vec xd(double t){
+        return arma::zeros(4);}
 
 int main()
 {   ofstream myfile;
@@ -21,7 +23,6 @@ int main()
         {0.,0.,0.,1.}};
     
     arma::mat R = 0.3*arma::eye(1,1);
-    arma::vec xd = arma::zeros(4);
     arma::vec xwrap;
     syst1.Ucurr = {0.0}; 
     syst1.Xcurr = {3.1, 0.0,0.0,0.0};

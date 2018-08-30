@@ -6,6 +6,7 @@
 struct xupair{
     arma::vec x;
     arma::vec u;
+    double t;
 };
 
 
@@ -36,7 +37,7 @@ class sac {
     void unom_shift ();  
     arma::mat xforward(const arma::mat& u);//forward simulation of x
     arma::mat rhoback(const arma::mat& xsol,const arma::mat& u); //backward simulation of the adjoint
-    inline arma::vec f(const arma::vec& rho, xupair pair){return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
+    inline arma::vec f(const arma::vec& rho, xupair pair){return -cost->dldx(pair.x,pair.u,pair.t) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
     double dJdlam_t(const arma::vec& xt,const arma::vec& rhot,const arma::vec& u2t,const arma::vec& u1t);//Mode insertion gradient at time t
     //saturation function for the control        
     arma::vec saturation(const arma::vec& u){
@@ -121,6 +122,7 @@ template <class system, class objective>
             rhosol.col(i)=rho0;
             current.x =xsol.col(i);
             current.u = u.col(i);
+            current.t = sys->tcurr+(double)i*sys->dt;
             rho0 = RK4_step<sac,xupair>(this,rho0,current,-1.0*sys->dt);
         } 
 return rhosol;}

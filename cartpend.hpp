@@ -11,12 +11,14 @@ class CartPend {
         double dt;
         double tcurr=0.0;
         arma::vec Xcurr, Ucurr;
+        arma::mat xdlist;
         CartPend (double, double,double,double,double);
         arma::vec proj_func (const arma::vec& x);
         inline arma::vec f(const arma::vec& x, const arma::vec& u);
         inline arma::mat dfdx(const arma::vec& x, const arma::vec& u);
         inline arma::vec hx(const arma::vec& x);
         void step(void);
+        
         
 };
 
