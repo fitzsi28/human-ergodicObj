@@ -21,7 +21,7 @@ class sac {
     double gamma = -5; double delt_init = 0.5; double beta = 0.55;
     double tcalc = 0.0; int kmax = 6; double T = 1.0; 
     int T_index;
-    arma::vec umax = {25};
+    arma::vec umax = {20};
     arma::mat ulist;
     
     sac(system *_sys, objective *_cost){
@@ -31,12 +31,13 @@ class sac {
         
     };
     
-    //main function for calculating a single SAC control vector
-    void SAC_calc(const arma::vec& InitCon, const arma::mat& u1);
-       
+    //main function for calculating the current SAC action
+    void SAC_calc(const arma::vec& InitCon);
+    void unom_shift ();  
     arma::mat xforward(const arma::mat& u);//forward simulation of x
     arma::mat rhoback(const arma::mat& xsol,const arma::mat& u); //backward simulation of the adjoint
     inline arma::vec f(const arma::vec& rho, xupair pair){return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
+    double dJdlam_t(const arma::vec& xt,const arma::vec& rhot,const arma::vec& u2t,const arma::vec& u1t);//Mode insertion gradient at time t
     //saturation function for the control        
     arma::vec saturation(const arma::vec& u){
         arma::vec usat; usat.zeros(u.n_rows);
@@ -59,10 +60,10 @@ class sac {
 
 //main function for calculating a single SAC control vector
 template <class system, class objective>
-void sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::mat& u1){
+void sac<system,objective>::SAC_calc(const arma::vec& InitCon){
     ulist.col(0) = sys->Ucurr;
     arma::vec ustar;
-    ustar = arma::zeros<arma::vec>(size(u1.col(0)));
+    ustar = arma::zeros<arma::vec>(size(sys->Ucurr));
     double tau[2] = {0,0};
     arma::uword tautemp;
     arma::mat xsol,rhosol;
@@ -71,17 +72,17 @@ void sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::mat& 
     arma::mat Jtau = arma::zeros<arma::mat>(1,T_index);
     double J1init,J1new,dJmin,alphad,lambda;
           
-    xsol = xforward(u1);
-    rhosol = rhoback(xsol, u1);
-    J1init = cost->calc_cost(xsol,u1);
+    xsol = xforward(ulist);
+    rhosol = rhoback(xsol, ulist);
+    J1init = cost->calc_cost(xsol,ulist);
     dJmin = 0;//gamma*J1init
     alphad = gamma*J1init;
     arma::vec Lam;
-    arma::vec dJdlam;
+    double dJdlam;
     for(int i = 0; i<T_index;i++){
         Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
-        usched.col(i) = (Lam +cost->R).i()*(Lam*u1.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
-        dJdlam = rhosol.col(i).t()*(sys->f(xsol.col(i),usched.col(i))-sys->f(xsol.col(i),u1.col(i)));
+        usched.col(i) = (Lam +cost->R).i()*(Lam*ulist.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
+        dJdlam = dJdlam_t(xsol.col(i),rhosol.col(i),usched.col(i),ulist.col(i));
         Jtau.col(i) =arma::norm(usched.col(i))+dJdlam+pow((double)i*sys->dt,beta);
         }
     tautemp = Jtau.index_min();
@@ -124,5 +125,15 @@ template <class system, class objective>
         } 
 return rhosol;}
 
+template <class system, class objective>
+double sac<system,objective>::dJdlam_t(const arma::vec& xt, const arma::vec& rhot, const arma::vec& u2t, const arma::vec& u1t){
+    return arma::as_scalar(rhot.t()*(sys->f(xt,u2t)-sys->f(xt,u1t)));}
+
+//shift the unom values with time
+template <class system, class objective>
+void sac<system,objective>::unom_shift(){
+    for(int i = 0;i<ulist.n_cols-1;i++) ulist.col(i) = ulist.col(i+1);
+        ulist.col(ulist.n_rows) = arma::zeros(ulist.n_rows,1);
+}
 
 #endif

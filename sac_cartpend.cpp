@@ -16,8 +16,8 @@ int main()
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
     arma::mat Q = {
         {200,0.,0.,0.},
-        {0., 1.,0.,0.},
-        {0.,0.,10.,0.},
+        {0., 0.,0.,0.},
+        {0.,0.,20.,0.},
         {0.,0.,0.,1.}};
     
     arma::mat R = 0.3*arma::eye(1,1);
@@ -33,17 +33,14 @@ int main()
  
     while (syst1.tcurr<30.0){
     myfile<<syst1.tcurr<<",";
-    xwrap = syst1.proj_func(syst1.Xcurr);
-    //myfile<<syst1.Xcurr(0)<<","<<syst1.Xcurr(1)<<",";
-    //myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
-    myfile<<xwrap(0)<<","<<xwrap(1)<<",";
-    myfile<<xwrap(2)<<","<<xwrap(3)<<",";
+    xwrap = syst1.proj_func(syst1.Xcurr); 
+    myfile<<xwrap(0)<<","<<xwrap(1)<<",";//myfile<<syst1.Xcurr(0)<<","<<syst1.Xcurr(1)<<",";
+    myfile<<xwrap(2)<<","<<xwrap(3)<<",";//myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
     myfile<<syst1.Ucurr(0)<<"\n";
     syst1.step();
-    sacsys.SAC_calc(syst1.Xcurr,sacsys.ulist);
-    syst1.Ucurr = sacsys.ulist.col(0); //cout<<syst1.Ucurr;
-        for(int i = 0;i<sacsys.ulist.n_cols-1;i++)sacsys.ulist.col(i) = sacsys.ulist.col(i+1);
-        sacsys.ulist.col(sacsys.ulist.n_rows) = arma::zeros(sacsys.ulist.n_rows,1);
+    sacsys.SAC_calc(syst1.Xcurr);
+    syst1.Ucurr = sacsys.ulist.col(0); 
+    sacsys.unom_shift();    
     } 
        
     myfile.close();
