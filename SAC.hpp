@@ -3,16 +3,6 @@
 #include<armadillo>
 #include <iostream>
 
-struct timeInt{
-    double start;
-    double end;
-};
-
-struct SACaction{
-    timeInt tau;
-    arma::vec u;
-};
-
 struct xupair{
     arma::vec x;
     arma::vec u;
@@ -22,7 +12,7 @@ struct xupair{
 
 template <class system, class objective>
 class sac {
-    system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx, sys->hx
+    system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx, sys->hx,sys->dt
     objective* cost; //from cost use cost->l, cost->dldx, cost->calc_cost
     
     public:
@@ -42,14 +32,11 @@ class sac {
     };
     
     //main function for calculating a single SAC control vector
-    SACaction SAC_calc(const arma::vec& InitCon, const arma::mat& u1);
-    //required functions for calc
-    //xforward; rhobackward; MinDisc;
+    void SAC_calc(const arma::vec& InitCon, const arma::mat& u1);
+       
     arma::mat xforward(const arma::mat& u);//forward simulation of x
     arma::mat rhoback(const arma::mat& xsol,const arma::mat& u); //backward simulation of the adjoint
-        inline arma::vec f(const arma::vec& rho, xupair pair){
-            return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;
-            }//f for rho backwards sim
+    inline arma::vec f(const arma::vec& rho, xupair pair){return -cost->dldx(pair.x,pair.u) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
     //saturation function for the control        
     arma::vec saturation(const arma::vec& u){
         arma::vec usat; usat.zeros(u.n_rows);
@@ -59,27 +46,24 @@ class sac {
                 else usat(i) = u(i);
             };
        return usat;}
-    //incorporating ustar into u matrix and 
-        //restricting the application interval of ustar to within the next time window
-    inline arma::mat uInc(SACaction ut){
+    //incorporating ustar into u matrix and restricting the application interval
+    inline arma::mat uInc(arma::vec &ut, double tau[]){
         arma::mat usol = ulist;
         for(int i = 0; i<T_index;i++){
-            if(sys->tcurr+(double)i*sys->dt > ut.tau.start && sys->tcurr+(double)i*sys->dt < ut.tau.end ){
-                usol.col(i) = ut.u;//cout<<i<<" "<<ut.u;
-                } 
+            if(sys->tcurr+(double)i*sys->dt > tau[0] && sys->tcurr+(double)i*sys->dt < tau[1] ){
+                usol.col(i) = ut;} 
          }
     return usol;}
-    
-    
-
 };
+
+
 //main function for calculating a single SAC control vector
 template <class system, class objective>
-SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::mat& u1){
+void sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::mat& u1){
     ulist.col(0) = sys->Ucurr;
-    SACaction ustar;
-    ustar.tau.start = 0; ustar.tau.end = 0; 
-    ustar.u = arma::zeros<arma::vec>(size(u1.col(0)));
+    arma::vec ustar;
+    ustar = arma::zeros<arma::vec>(size(u1.col(0)));
+    double tau[2] = {0,0};
     arma::uword tautemp;
     arma::mat xsol,rhosol;
     arma::mat utemp = ulist;
@@ -98,56 +82,47 @@ SACaction sac<system,objective>::SAC_calc(const arma::vec& InitCon, const arma::
         Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
         usched.col(i) = (Lam +cost->R).i()*(Lam*u1.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
         dJdlam = rhosol.col(i).t()*(sys->f(xsol.col(i),usched.col(i))-sys->f(xsol.col(i),u1.col(i)));
-        //cout<<dJdlam<<" ";
-        Jtau.col(i) =arma::norm(usched.col(i))+dJdlam;//+pow((double)i*sys->dt,beta);
-        //cout<<Jtau.col(i);
-    }
+        Jtau.col(i) =arma::norm(usched.col(i))+dJdlam+pow((double)i*sys->dt,beta);
+        }
     tautemp = Jtau.index_min();
-    //cout<<" index "<<usched(tautemp);
-    //ustar.u=usched.col(0);
-    ustar.u=saturation(usched.col(tautemp));
+    ustar=saturation(usched.col(tautemp));//ustar.u=usched.col(0);
     int k = 0; J1new = 1000*J1init;
     while(J1new-J1init>dJmin && k<= kmax){
         lambda = delt_init*pow(beta,k);
-        ustar.tau.start = sys->tcurr + (double)tautemp*sys->dt -(lambda/2);
-        ustar.tau.end = sys->tcurr + (double)tautemp*sys->dt+(lambda/2);
-        utemp = uInc(ustar);
+        tau[0] = sys->tcurr + (double)tautemp*sys->dt -(lambda/2);
+        tau[1] = sys->tcurr + (double)tautemp*sys->dt+(lambda/2);
+        utemp = uInc(ustar,tau);
         xsol = xforward(utemp);
         J1new = cost->calc_cost(xsol,utemp);
         k++;}
     ulist = utemp;
-    //cout<<"u "<<ulist;
-    return ustar;
-    }
+return;}
+    
 //forward simulation of x
 template <class system, class objective>
-arma::mat sac<system,objective>::xforward(const arma::mat& u){
-    arma::mat xsol = arma::zeros<arma::mat>(4,T_index);
-    arma::vec x0 = sys->Xcurr;
-   for(int i = 0; i<T_index;i++){
-       xsol.col(i)=x0;
-       x0 = RK4_step<system,const arma::vec&>(sys,x0,u.col(i),sys->dt);
-   }
-    
-return xsol;
-}
+    arma::mat sac<system,objective>::xforward(const arma::mat& u){
+        arma::mat xsol = arma::zeros<arma::mat>(4,T_index);
+        arma::vec x0 = sys->Xcurr;
+        for(int i = 0; i<T_index;i++){
+           xsol.col(i)=x0;
+           x0 = RK4_step<system,const arma::vec&>(sys,x0,u.col(i),sys->dt);
+        }    
+return xsol;}
 
 //backward simulaiton of the adjoint
 template <class system, class objective>
-arma::mat sac<system,objective>::rhoback(const arma::mat& xsol,const arma::mat& u){
-    arma::mat rhosol = arma::zeros<arma::mat>(4,T_index);
-    arma::vec rho0 = sys->Xcurr;
-    xupair current;
-    rho0.zeros();
-   for(int i = T_index-1; i>=0;i--){
-       rhosol.col(i)=rho0;
-       current.x =xsol.col(i);
-       current.u = u.col(i);
-       rho0 = RK4_step<sac,xupair>(this,rho0,current,-1.0*sys->dt);
-   }
-    
-return rhosol;
-}
+    arma::mat sac<system,objective>::rhoback(const arma::mat& xsol,const arma::mat& u){
+        arma::mat rhosol = arma::zeros<arma::mat>(4,T_index);
+        arma::vec rho0 = sys->Xcurr;
+        xupair current;
+        rho0.zeros();
+        for(int i = T_index-1; i>=0;i--){
+            rhosol.col(i)=rho0;
+            current.x =xsol.col(i);
+            current.u = u.col(i);
+            rho0 = RK4_step<sac,xupair>(this,rho0,current,-1.0*sys->dt);
+        } 
+return rhosol;}
 
 
 #endif
