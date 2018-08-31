@@ -65,7 +65,7 @@ inline arma::vec CartPend::hx(const arma::vec& x){
 void CartPend::step(){
     Xcurr = RK4_step<CartPend>(this,Xcurr,Ucurr,dt);
     tcurr = tcurr+dt;
-}
+};
 
 
 #endif

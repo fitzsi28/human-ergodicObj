@@ -15,18 +15,18 @@ template <class system, class objective>
 class sac {
     system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx, sys->hx,sys->dt
     objective* cost; //from cost use cost->l, cost->dldx, cost->calc_cost
-    
-    public:
-    
     //algorithm parameters
     double gamma = -5; double delt_init = 0.5; double beta = 0.55;
-    double tcalc = 0.0; int kmax = 6; double T = 1.0; 
+    double tcalc; int kmax = 6; double T; 
+    
+    arma::vec umax;
+    
+    public:
     int T_index;
-    arma::vec umax = {20};
     arma::mat ulist;
     
-    sac(system *_sys, objective *_cost){
-        sys = _sys; cost=_cost;
+    sac(system *_sys, objective *_cost, double _tcalc,double _T,const arma::vec& _umax){
+        sys = _sys; cost=_cost; tcalc=_tcalc; T=_T;umax = _umax;
         T_index = T/sys->dt;
         ulist = arma::zeros(1,T_index);
         
@@ -136,6 +136,6 @@ template <class system, class objective>
 void sac<system,objective>::unom_shift(){
     for(int i = 0;i<ulist.n_cols-1;i++) ulist.col(i) = ulist.col(i+1);
         ulist.col(ulist.n_rows) = arma::zeros(ulist.n_rows,1);
-}
+};
 
 #endif
