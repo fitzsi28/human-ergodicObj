@@ -124,6 +124,19 @@ mda_cartpend/fast:
 .PHONY : mda_cartpend/fast
 
 #=============================================================================
+# Target rules for targets named mig_mda_cartpend
+
+# Build rule for target.
+mig_mda_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
+.PHONY : mig_mda_cartpend
+
+# fast build rule for target.
+mig_mda_cartpend/fast:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
+.PHONY : mig_mda_cartpend/fast
+
+#=============================================================================
 # Target rules for targets named sac_cartpend
 
 # Build rule for target.
@@ -163,6 +176,33 @@ mda_cartpend.cpp.s:
 	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.s
 .PHONY : mda_cartpend.cpp.s
 
+mig_mda_cartpend.o: mig_mda_cartpend.cpp.o
+
+.PHONY : mig_mda_cartpend.o
+
+# target to build an object file
+mig_mda_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.o
+.PHONY : mig_mda_cartpend.cpp.o
+
+mig_mda_cartpend.i: mig_mda_cartpend.cpp.i
+
+.PHONY : mig_mda_cartpend.i
+
+# target to preprocess a source file
+mig_mda_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.i
+.PHONY : mig_mda_cartpend.cpp.i
+
+mig_mda_cartpend.s: mig_mda_cartpend.cpp.s
+
+.PHONY : mig_mda_cartpend.s
+
+# target to generate assembly for a file
+mig_mda_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.s
+.PHONY : mig_mda_cartpend.cpp.s
+
 sac_cartpend.o: sac_cartpend.cpp.o
 
 .PHONY : sac_cartpend.o
@@ -197,12 +237,16 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... rebuild_cache"
 	@echo "... mda_cartpend"
+	@echo "... mig_mda_cartpend"
 	@echo "... sac_cartpend"
+	@echo "... rebuild_cache"
 	@echo "... mda_cartpend.o"
 	@echo "... mda_cartpend.i"
 	@echo "... mda_cartpend.s"
+	@echo "... mig_mda_cartpend.o"
+	@echo "... mig_mda_cartpend.i"
+	@echo "... mig_mda_cartpend.s"
 	@echo "... sac_cartpend.o"
 	@echo "... sac_cartpend.i"
 	@echo "... sac_cartpend.s"

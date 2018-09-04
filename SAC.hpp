@@ -15,53 +15,56 @@ template <class system, class objective>
 class sac {
     system* sys; //from sys use sys->f, sys->proj_func, sys->dfdx, sys->hx,sys->dt
     objective* cost; //from cost use cost->l, cost->dldx, cost->calc_cost
+     std::function<arma::vec(double)> unom;
     //algorithm parameters
     double gamma = -5; double delt_init = 0.5; double beta = 0.55;
     double tcalc; int kmax = 6; double T; 
     
     arma::vec umax;
     
-    public:
-    int T_index;
-    arma::mat ulist;
     
-    sac(system *_sys, objective *_cost, double _tcalc,double _T,const arma::vec& _umax){
-        sys = _sys; cost=_cost; tcalc=_tcalc; T=_T;umax = _umax;
-        T_index = T/sys->dt;
-        ulist = arma::zeros(1,T_index);
-        
-    };
-    
-    //main function for calculating the current SAC action
-    void SAC_calc(const arma::vec& InitCon);
-    void unom_shift ();  
-    arma::mat xforward(const arma::mat& u);//forward simulation of x
-    arma::mat rhoback(const arma::mat& xsol,const arma::mat& u); //backward simulation of the adjoint
-    inline arma::vec f(const arma::vec& rho, xupair pair){return -cost->dldx(pair.x,pair.u,pair.t) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
-    double dJdlam_t(const arma::vec& xt,const arma::vec& rhot,const arma::vec& u2t,const arma::vec& u1t);//Mode insertion gradient at time t
     //saturation function for the control        
     arma::vec saturation(const arma::vec& u){
         arma::vec usat; usat.zeros(u.n_rows);
         for (int i = 0; i<u.n_rows; i++){
                 if(u(i) > umax(i)) usat(i) = umax(i);
                 else if(u(i) < -umax(i)){ usat(i) = -umax(i);}
-                else usat(i) = u(i);
-            };
+                else usat(i) = u(i);};
        return usat;}
     //incorporating ustar into u matrix and restricting the application interval
     inline arma::mat uInc(arma::vec &ut, double tau[]){
         arma::mat usol = ulist;
         for(int i = 0; i<T_index;i++){
             if(sys->tcurr+(double)i*sys->dt > tau[0] && sys->tcurr+(double)i*sys->dt < tau[1] ){
-                usol.col(i) = ut;} 
-         }
+                usol.col(i) = ut;} }
     return usol;}
+    
+    public:
+    bool iterative=false;
+    int T_index;
+    arma::mat ulist;
+    
+    sac(system *_sys, objective *_cost, double _tcalc,double _T,const arma::vec& _umax,std::function<arma::vec(double)> _unom){
+        sys = _sys; cost=_cost; tcalc=_tcalc; T=_T;umax = _umax; unom = _unom;
+        T_index = T/sys->dt;
+        ulist = arma::zeros(1,T_index); 
+        for(int i = 0;i<ulist.n_cols-1;i++) ulist.col(i) = unom(sys->tcurr + (double)i*sys->dt);
+    };
+    
+    //main function for calculating the current SAC action
+    void SAC_calc();
+    void unom_shift ();  
+    double dJdlam_t(const arma::vec& xt,const arma::vec& rhot,const arma::vec& u2t,const arma::vec& u1t);//Mode insertion gradient at time t
+    arma::mat xforward(const arma::mat& u);//forward simulation of x
+    arma::mat rhoback(const arma::mat& xsol,const arma::mat& u); //backward simulation of the adjoint
+    inline arma::vec f(const arma::vec& rho, xupair pair){
+        return -cost->dldx(pair.x,pair.u,pair.t) - sys->dfdx(pair.x,pair.u).t()*rho;}//f for rho backwards sim
 };
 
 
 //main function for calculating a single SAC control vector
 template <class system, class objective>
-void sac<system,objective>::SAC_calc(const arma::vec& InitCon){
+void sac<system,objective>::SAC_calc(){
     ulist.col(0) = sys->Ucurr;
     arma::vec ustar;
     ustar = arma::zeros<arma::vec>(size(sys->Ucurr));
@@ -135,7 +138,7 @@ double sac<system,objective>::dJdlam_t(const arma::vec& xt, const arma::vec& rho
 template <class system, class objective>
 void sac<system,objective>::unom_shift(){
     for(int i = 0;i<ulist.n_cols-1;i++) ulist.col(i) = ulist.col(i+1);
-        ulist.col(ulist.n_rows) = arma::zeros(ulist.n_rows,1);
+        ulist.col(ulist.n_rows) = unom(sys->tcurr +T+sys->dt);
 };
 
 #endif

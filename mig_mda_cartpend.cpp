@@ -9,7 +9,7 @@ using namespace std;
 #include"error_cost.hpp"
 #include"SAC.hpp"
 #include"rk4_int.hpp"
-#include"MDA.hpp"
+#include"MIGMDA.hpp"
 
 arma::vec xd(double t){
         return arma::zeros(4);};
@@ -18,7 +18,7 @@ arma::vec unom(double t){
 
 int main()
 {   ofstream myfile;
-    myfile.open ("mdatest.csv");
+    myfile.open ("migtest.csv");
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
     arma::mat Q = {
         {200,0.,0.,0.},
@@ -30,11 +30,12 @@ int main()
  
     arma::vec xwrap;
     syst1.Ucurr = {0.0}; 
-    syst1.Xcurr = {3.1, 0.0,0.0,0.0};
+    syst1.Xcurr = {-3.1, 0.0,0.0,0.0};
     errorcost<CartPend> cost (Q,R,xd,&syst1);
     sac<CartPend,errorcost<CartPend>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
-    mda demon(PI/2, true);
     arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
+    
+    migmda<CartPend,errorcost<CartPend>> demon(&sacsys, true);
     normal_distribution<double> user(0,20);
     default_random_engine generator;
     arma::vec input = {user(generator)};
@@ -48,9 +49,10 @@ int main()
     myfile<<xwrap(2)<<","<<xwrap(3)<<",";//myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
     myfile<<syst1.Ucurr(0)<<","<<input(0)<<"\n";
     syst1.step();
-    sacsys.SAC_calc();
+    //sacsys.SAC_calc();
     input = {user(generator)};
-    syst1.Ucurr = demon.filter(sacsys.ulist.col(0),input);
+    syst1.Ucurr = demon.filter(input);
+    //syst1.Ucurr = sacsys.ulist.col(0); 
     sacsys.unom_shift();    
     } 
        
