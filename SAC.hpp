@@ -51,8 +51,7 @@ class sac {
         for(int i = 0;i<ulist.n_cols-1;i++) ulist.col(i) = unom(sys->tcurr + (double)i*sys->dt);
     };
     
-    //main function for calculating the current SAC action
-    void SAC_calc();
+    void SAC_calc();//main function for calculating the current SAC action
     void unom_shift ();  
     double dJdlam_t(const arma::vec& xt,const arma::vec& rhot,const arma::vec& u2t,const arma::vec& u1t);//Mode insertion gradient at time t
     arma::mat xforward(const arma::mat& u);//forward simulation of x

@@ -33,7 +33,7 @@ int main()
     syst1.Xcurr = {3.1, 0.0,0.0,0.0};
     errorcost<CartPend> cost (Q,R,xd,&syst1);
     sac<CartPend,errorcost<CartPend>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
-    mda demon(PI/2, true);
+    mda demon(PI/2, false);
     arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
     normal_distribution<double> user(0,20);
     default_random_engine generator;

@@ -2,8 +2,6 @@
 #define ERRORCOST_HPP
 #include<armadillo>
 
-class CartPend;
-
 template <class system>
 class errorcost {
         system* sys;

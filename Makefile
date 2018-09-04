@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/kt-fitz/human-ergodicObj
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,30 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named mda_cartpend
+# Target rules for targets named ergsac_cartpend
 
 # Build rule for target.
-mda_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mda_cartpend
-.PHONY : mda_cartpend
+ergsac_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_cartpend
+.PHONY : ergsac_cartpend
 
 # fast build rule for target.
-mda_cartpend/fast:
-	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/build
-.PHONY : mda_cartpend/fast
-
-#=============================================================================
-# Target rules for targets named mig_mda_cartpend
-
-# Build rule for target.
-mig_mda_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
-.PHONY : mig_mda_cartpend
-
-# fast build rule for target.
-mig_mda_cartpend/fast:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
-.PHONY : mig_mda_cartpend/fast
+ergsac_cartpend/fast:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
+.PHONY : ergsac_cartpend/fast
 
 #=============================================================================
 # Target rules for targets named sac_cartpend
@@ -149,59 +136,32 @@ sac_cartpend/fast:
 	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/build
 .PHONY : sac_cartpend/fast
 
-mda_cartpend.o: mda_cartpend.cpp.o
+ergsac_cartpend.o: ergsac_cartpend.cpp.o
 
-.PHONY : mda_cartpend.o
-
-# target to build an object file
-mda_cartpend.cpp.o:
-	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.o
-.PHONY : mda_cartpend.cpp.o
-
-mda_cartpend.i: mda_cartpend.cpp.i
-
-.PHONY : mda_cartpend.i
-
-# target to preprocess a source file
-mda_cartpend.cpp.i:
-	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.i
-.PHONY : mda_cartpend.cpp.i
-
-mda_cartpend.s: mda_cartpend.cpp.s
-
-.PHONY : mda_cartpend.s
-
-# target to generate assembly for a file
-mda_cartpend.cpp.s:
-	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.s
-.PHONY : mda_cartpend.cpp.s
-
-mig_mda_cartpend.o: mig_mda_cartpend.cpp.o
-
-.PHONY : mig_mda_cartpend.o
+.PHONY : ergsac_cartpend.o
 
 # target to build an object file
-mig_mda_cartpend.cpp.o:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.o
-.PHONY : mig_mda_cartpend.cpp.o
+ergsac_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.o
+.PHONY : ergsac_cartpend.cpp.o
 
-mig_mda_cartpend.i: mig_mda_cartpend.cpp.i
+ergsac_cartpend.i: ergsac_cartpend.cpp.i
 
-.PHONY : mig_mda_cartpend.i
+.PHONY : ergsac_cartpend.i
 
 # target to preprocess a source file
-mig_mda_cartpend.cpp.i:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.i
-.PHONY : mig_mda_cartpend.cpp.i
+ergsac_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.i
+.PHONY : ergsac_cartpend.cpp.i
 
-mig_mda_cartpend.s: mig_mda_cartpend.cpp.s
+ergsac_cartpend.s: ergsac_cartpend.cpp.s
 
-.PHONY : mig_mda_cartpend.s
+.PHONY : ergsac_cartpend.s
 
 # target to generate assembly for a file
-mig_mda_cartpend.cpp.s:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.s
-.PHONY : mig_mda_cartpend.cpp.s
+ergsac_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.s
+.PHONY : ergsac_cartpend.cpp.s
 
 sac_cartpend.o: sac_cartpend.cpp.o
 
@@ -236,17 +196,13 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
-	@echo "... mda_cartpend"
-	@echo "... mig_mda_cartpend"
-	@echo "... sac_cartpend"
 	@echo "... rebuild_cache"
-	@echo "... mda_cartpend.o"
-	@echo "... mda_cartpend.i"
-	@echo "... mda_cartpend.s"
-	@echo "... mig_mda_cartpend.o"
-	@echo "... mig_mda_cartpend.i"
-	@echo "... mig_mda_cartpend.s"
+	@echo "... edit_cache"
+	@echo "... ergsac_cartpend"
+	@echo "... sac_cartpend"
+	@echo "... ergsac_cartpend.o"
+	@echo "... ergsac_cartpend.i"
+	@echo "... ergsac_cartpend.s"
 	@echo "... sac_cartpend.o"
 	@echo "... sac_cartpend.i"
 	@echo "... sac_cartpend.s"
