@@ -7,32 +7,35 @@ class ergodicost {
         system* sys;
         double L1,L2,L1a,L2a;
         arma::mat hk;
+        arma::mat phik;
+        arma::mat ck;
         int K;
         inline double trapint(std::function<double(double,double)> f,int N1,int N2,double d1,double d2){
             double total = 0.;
             for(int j=0; j<N2;j++){
-                for(int k=0;j<N1;k++){
-                        total+=(1/4)*d1*d2*(f(k*d1,j*d2)+f(k*d1,(j+1)*d2)+f((k+1)*d1,j*d2)+f((k+1)*d1,(j+1)*d2));
+                for(int k=0;k<N1;k++){
+                    total+=(1./4.)*d1*d2*(f(k*d1,j*d2)+f(k*d1,(j+1)*d2)+f((k+1)*d1,j*d2)+f((k+1)*d1,(j+1)*d2));
                 }
             }
         return total;};
         void hkfunc();
+        void phikfunc();
+        void ckfunc();
     public:
         double Q;
         arma::mat R;
-        std::function<arma::vec(double[])> phid;
-        ergodicost(double _Q, arma::mat _R,int _K, std::function<arma::vec(double[])> _phid,double (&_Ln)[2][2], system *_sys){
+        std::function<double(double,double)> phid;
+        ergodicost(double _Q, arma::mat _R,int _K, std::function<double(double,double)> _phid,double (&_Ln)[2][2], system *_sys){
             Q=_Q; R=_R; sys=_sys; K = _K; phid = _phid; // initialize with Q, R, sys, phid, and the domain
-            L1a=_Ln[0][0]; L2a=_Ln[1][0]; L1 =_Ln[0][1]-L1a; L2=_Ln[1][0]-L2a;
-             hk.set_size(K,K); hkfunc();
+            L1a=_Ln[0][0]; L2a=_Ln[1][0]; L1 =_Ln[0][1]-L1a; L2=_Ln[1][1]-L2a;
+             hk.set_size(K,K); hkfunc(); 
+             phik.set_size(K,K); cout<<phik; phikfunc();cout<<phik;
+             ck.set_size(K,K);
+             
             };
         
-            double phikfunc(int i,int j){
-            double phik=0.;
             
-            
-        return phik;
-        };
+        
         /*    
         inline double l (const arma::vec& x,const arma::vec& u,double ti){
             arma::vec xproj = sys->proj_func(x);
@@ -52,17 +55,29 @@ class ergodicost {
             return J1;
         }
     */
-    };
-template<class system> void ergodicost<system>::hkfunc(){
-            for(int m=0;m<K;m++){
-                for(int n=0;n<K;n++){
-                    hk(m,n)=0.0;
-                    int L1ind = 100; int L2ind = 100;
-                    double d1 = L1ind/L1;
-                    double d2 = L2ind/L2;
-                    hk(m,n)=trapint([&](double x1,double x2){pow(cos(m*PI*x1/L1),2)*pow(cos(n*PI*x2/L2),2);},L1ind,L2ind,d1,d2);
-                 };
-            };
-        }
+};/////////end main class def
 
+template<class system> void ergodicost<system>::hkfunc(){
+    for(int m=0;m<K;m++){
+        for(int n=0;n<K;n++){
+            int L1ind = 100; int L2ind = 100;
+            double d1 = L1ind/L1;
+            double d2 = L2ind/L2;
+            auto fk = [&](double x1,double x2){return pow(cos(m*PI*x1/L1),2.)*pow(cos(n*PI*x2/L2),2.);};
+            hk(m,n)=pow(trapint(fk,L1ind,L2ind,d1,d2),0.5);      
+        };
+    };
+}
+
+template<class system> void ergodicost<system>::phikfunc(){
+    for(int m=0;m<K;m++){
+        for(int n=0;n<K;n++){
+            int L1ind = 100; int L2ind = 100;
+            double d1 = L1ind/L1;
+            double d2 = L2ind/L2;
+            auto fk = [&](double x1,double x2){return phid(x1,x2)*cos(m*PI*x1/L1)*cos(n*PI*x2/L2)/hk(m,n);};
+            phik(m,n)=trapint(fk,L1ind,L2ind,d1,d2);      
+        };
+    };
+}
 #endif

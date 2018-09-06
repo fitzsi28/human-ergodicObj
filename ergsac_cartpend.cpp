@@ -9,8 +9,12 @@ using namespace std;
 #include"ergodic_cost.hpp"
 #include"SAC.hpp"
 #include"rk4_int.hpp"
-arma::vec xd(double t[]){
-        return arma::zeros(4);};
+
+double xd(double x1, double x2){
+    arma::vec x = {{x1},{x2}};
+    arma::vec Mu = {{PI},{7}};
+    arma::mat Sig = {{0.1,0.},{0.,1}};
+        return arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));};
 arma::vec unom(double t){
         return arma::zeros(1);};
 
@@ -19,7 +23,7 @@ int main()
     myfile.open ("ergtest.csv");
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
     arma::mat R = 0.3*arma::eye(1,1); double q=10.;
-    double domain[2][2]={{-PI,PI},{-7,7}};
+    double domain[2][2]={{-PI,PI},{-7.,7.}};
     ergodicost<CartPend> cost (q,R,4,xd,domain,&syst1);
  
     arma::vec umax = {20};
