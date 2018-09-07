@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Armadillo REQUIRED)
 include_directories(${ARMADILLO_INCLUDE_DIRS})
 
-add_executable(sac_cartpend sac_cartpend.cpp)
-target_link_libraries(sac_cartpend ${ARMADILLO_LIBRARIES})
+#add_executable(sac_cartpend sac_cartpend.cpp)
+#target_link_libraries(sac_cartpend ${ARMADILLO_LIBRARIES})
 
 #add_executable(mda_cartpend mda_cartpend.cpp)
 #target_link_libraries(mda_cartpend ${ARMADILLO_LIBRARIES})
