@@ -24,7 +24,7 @@ int main()
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
     arma::mat R = 0.3*arma::eye(1,1); double q=10.;
     double domain[2][2]={{-PI,PI},{-7.,7.}};
-    ergodicost<CartPend> cost (q,R,4,xd,domain,&syst1);
+    ergodicost<CartPend> cost (q,R,4,xd,domain,1.0,&syst1);
  
     arma::vec umax = {20};
     sac<CartPend,ergodicost<CartPend>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
