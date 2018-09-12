@@ -85,7 +85,7 @@ void sac<system,objective>::SAC_calc(){
     dJdlam = dJdlam_t(xsol.col(i),rhosol.col(i),usched.col(i),ulist.col(i));
     Jtau.col(i) =arma::norm(usched.col(i))+dJdlam+pow((double)i*sys->dt,beta);
     }
-  tautemp = Jtau.index_min(); 
+  tautemp = Jtau.index_min(); //cout<<Jtau;
   ustar=saturation(usched.col(tautemp));//ustar.u=usched.col(0);
   int k = 0; J1new = 1000*J1init;
   while(J1new-J1init>dJmin && k<= kmax){
