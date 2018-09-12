@@ -13,7 +13,7 @@ using namespace std;
 double xd(double x1, double x2){
     arma::vec x = {{x1},{x2}};
     arma::vec Mu = {{PI},{10}};
-    arma::mat Sig = {{0.01,0.},{0.,10.}};
+    arma::mat Sig = {{0.1,0.},{0.,10.0}};
         return arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));};
 arma::vec unom(double t){
         return arma::zeros(1);};
@@ -22,9 +22,9 @@ int main()
 {   ofstream myfile;
     myfile.open ("ergtest.csv");
     CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
-    arma::mat R = 0.3*arma::eye(1,1); double q=1000.;
+    arma::mat R = 0.1*arma::eye(1,1); double q=1000.;
     double domain[2][2]={{-PI,PI},{-10.,10.}};
-    ergodicost<CartPend> cost (q,R,5,0,2,xd,domain,1.0,&syst1);
+    ergodicost<CartPend> cost (q,R,7,0,2,xd,domain,1.0,&syst1);
     
     arma::vec umax = {20.};
     sac<CartPend,ergodicost<CartPend>> sacsys (&syst1,&cost,0.,1.0,umax,unom);

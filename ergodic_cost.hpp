@@ -1,6 +1,7 @@
 #ifndef ERGODICCOST_HPP
 #define ERGODICCOST_HPP
 #include<armadillo>
+#include<math.h>
 
 template <class system>
 class ergodicost {
@@ -42,33 +43,34 @@ class ergodicost {
     double calc_cost (const arma::mat& x,const arma::mat& u);
     void ckmemory (const arma::vec&);
 };/////////end main class def
+
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
-  xproj(X1) = xproj(X1)-L1a; xproj(X2) = xproj(X2)-L2a;
   arma::vec a; a.zeros(xproj.n_rows);
+  a(X2) = -1./(xproj(X2)+L2/2)+1/(-xproj(X2)+L2/2);
+  xproj(X1) = xproj(X1)-L1a; xproj(X2) = xproj(X2)-L2a;
   double LamK;
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
       LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5);
-      a(X1)+=LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*-sin(k1*PI*xproj(X1)/L1)*cos(k2*PI*xproj(X2)/L2)/hk(k1,k2)*k1*PI/L1;
-      a(X2)+=LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*cos(k1*PI*xproj(X1)/L1)*-sin(k2*PI*xproj(X2)/L2)/hk(k1,k2)*k2*PI/L2;
+      a(X1)+=Q*LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*-sin(k1*PI*xproj(X1)/L1)*cos(k2*PI*xproj(X2)/L2)/hk(k1,k2)*k1*PI/L1;
+      a(X2)+=Q*LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*cos(k1*PI*xproj(X1)/L1)*-sin(k2*PI*xproj(X2)/L2)/hk(k1,k2)*k2*PI/L2;
     };
   };
-return Q*a;}
+return a;}
 
 template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
   double J1 = 0.;
   double LamK;
   cktemp = ckpast+ckfunc(x);
-  //arma::mat ck = ckpast+ckfunc(x);
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
-      LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5); //cktemp (k1,k2)= ckpast(k1,k2)+ck(k1,k2);
+      LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5); 
       J1+=arma::as_scalar(LamK*pow((cktemp(k1,k2)-phik(k1,k2)),2.));
     };
   };J1 = Q*J1; 
   for (int i = 0; i<x.n_cols; i++){
-    J1+=arma::as_scalar(u.col(i).t()*R*u.col(i));
+    J1+=arma::as_scalar(u.col(i).t()*R*u.col(i))-log(L2/2+x(X2,i))-log(L2/2-x(X2,i));
   };
 return J1;}
 
