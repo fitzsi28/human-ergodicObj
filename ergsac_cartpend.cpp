@@ -33,8 +33,7 @@ int main(){
   syst1.Xcurr = {3.1, 0.0,0.0,0.0}; 
 
   myfile<<"time,theta,thetadot,x,xdot,u\n";
- 
-
+  
   while (syst1.tcurr<30.0){
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 

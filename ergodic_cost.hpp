@@ -46,7 +46,7 @@ class ergodicost {
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
-  a(2) = -1./(xproj(X2)+L2/2)+1/(-xproj(X2)+L2/2);
+  a(2) = -1000./(xproj(X2)+L2/2)+1000./(-xproj(X2)+L2/2);
   xproj(X1) = xproj(X1)-L1; xproj(X2) = xproj(X2)-L2;
   double LamK;
   for(int k1=0;k1<K;k1++){
@@ -71,7 +71,10 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
     };
   };J1 = Q*J1; 
   for (int i = 0; i<x.n_cols; i++){
-    J1+=arma::as_scalar(u.col(i).t()*R*u.col(i))-log(L2/2+x(2,i))-log(L2/2-x(2,i));
+    J1+=arma::as_scalar(u.col(i).t()*R*u.col(i));
+    if(x(2,i)>20){J1+=-log(20.+x(2,i))+INFINITY;}
+      else if(x(2,i)<-20){J1+=INFINITY-log(20.-x(2,i));}
+        else {J1+=-1000.*log(20.+x(2,i))-1000.*log(20.-x(2,i));};
   };
 return J1;}
 
