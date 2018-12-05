@@ -31,7 +31,7 @@ int main()
     syst1.Xcurr = {-3.1, 0.0,0.0,0.0};
     errorcost<CartPend> cost (Q,R,xd,&syst1);
     sac<CartPend,errorcost<CartPend>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
-    arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
+    //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
     myfile<<"time,theta,thetadot,x,xdot,u\n";
  

@@ -17,7 +17,7 @@ class sac {
   objective* cost; //from cost use cost->dldx, cost->calc_cost
   std::function<arma::vec(double)> unom;
   //algorithm parameters
-  double gamma = -5; double delt_init = 0.5; double beta = 0.55;
+  double gamma = -5555; double delt_init = 0.5; double beta = 0.55;
   double tcalc; int kmax = 6; double T;  
   arma::vec umax;
   
