@@ -13,7 +13,7 @@ using namespace std;
 double xd(double x1, double x2){
   arma::vec x = {{x1},{x2}};
   arma::vec Mu = {{0.},{0.}};
-  arma::mat Sig = {{0.1,0.},{0.,1.0}};
+  arma::mat Sig = {{0.1,0.},{0.,0.1}};
 return arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));};
 arma::vec unom(double t){
   return arma::zeros(1);};
@@ -21,9 +21,9 @@ arma::vec unom(double t){
 int main(){
   ofstream myfile;
   myfile.open ("ergtest.csv");
-  CartPend syst1 (0.1,0.1,9.81,2.0,0.01);
+  CartPend syst1 (1.0,0.1,9.81,2.0,0.01);
   arma::mat R = 0.01*arma::eye(1,1); double q=5000.;
-  ergodicost<CartPend> cost (q,R,5,0,1,xd,PI,12.,2.0,&syst1);
+  ergodicost<CartPend> cost (q,R,5,0,1,xd,PI,20.,2.0,&syst1);
     
   arma::vec umax = {40};
   sac<CartPend,ergodicost<CartPend>> sacsys (&syst1,&cost,0.,2.0,umax,unom);
@@ -43,7 +43,8 @@ int main(){
     syst1.step();
     sacsys.SAC_calc();
     syst1.Ucurr = sacsys.ulist.col(0); 
-    sacsys.unom_shift(); cost.ckmemory(syst1.Xcurr);   
+    sacsys.unom_shift(); cost.ckmemory(syst1.Xcurr);
+    if(fmod(syst1.tcurr,1)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
     } 
        
     myfile.close();

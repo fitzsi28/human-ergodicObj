@@ -24,7 +24,11 @@ class ergodicost {
   void hkfunc();
   void phikfunc();
   arma::mat ckfunc(const arma::mat& );
-  
+  arma::mat Q2 = {
+        {0.,0.,0.,0.},
+        {0., 20.,0.,0.},
+        {0.,0.,40.,0.},
+        {0.,0.,0.,1.}};
   public:
     double Q;
     arma::mat R;
@@ -37,32 +41,37 @@ class ergodicost {
       phik.set_size(K,K); phikfunc();
       ckpast.zeros(K,K); cktemp.zeros(K,K);
     };
-    
+    double l (const arma::vec& x,const arma::vec& u,double ti);
     arma::vec dldx (const arma::vec&x, const arma::vec& u, double ti);
     double calc_cost (const arma::mat& x,const arma::mat& u);
     void ckmemory (const arma::vec&);
 };/////////end main class def
 
+template<class system> double ergodicost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
+      arma::vec xproj = sys->proj_func(x);
+      return arma::as_scalar((xproj.t()*Q2*xproj+u.t()*R*u)/2);
+      }
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
-  a(2) = -1000./(xproj(X2)+L2/2)+1000./(-xproj(X2)+L2/2);
-  xproj(X1) = xproj(X1)-L1; xproj(X2) = xproj(X2)-L2;
-  double LamK;
+  a=a+Q2*xproj;
+  xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
+  double LamK, Dx1F,Dx2F;
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
       LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5);
-      a(X1)+=LamK*(cktemp(k1,k2)-phik(k1,k2))/T*-(k1*PI/L1)*sin(0.5*(k1*PI*xproj(X1)+k1*PI*L1)/L1)*
-          cos(0.5*(k2*PI*xproj(X2)+k2*PI*L2)/L2)/hk(k1,k2);
-      a(X2)+=LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*cos(k1*PI*xproj(X1)/L1)*-sin(k2*PI*xproj(X2)/L2)/hk(k1,k2)*k2*PI/L2;
+      Dx1F = arma::as_scalar((-k1*PI/(2*L1*hk(k1,k2)))*sin(k1*PI*xproj(X1)/(2*L1))*cos(k2*PI*xproj(X2)/(2*L2)));
+      Dx2F = arma::as_scalar((-k2*PI/(2*L2*hk(k1,k2)))*cos(k1*PI*xproj(X1)/(2*L1))*sin(k2*PI*xproj(X2)/(2*L2)));
+      a(X1)+=Q*LamK*(cktemp(k1,k2)-phik(k1,k2))/T*Dx1F;
+      a(X2)+=Q*LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*Dx2F;
 
     };
   };
-return Q*a;}
+return a;}
 
 template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
-  double J1 = 0.;
-  double LamK;
+  
+  double J1 = 0.; double LamK;
   cktemp = ckpast+ckfunc(x);
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
@@ -71,35 +80,33 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
     };
   };J1 = Q*J1; 
   for (int i = 0; i<x.n_cols; i++){
-    J1+=arma::as_scalar(u.col(i).t()*R*u.col(i));
-    if(x(2,i)>20){J1+=-log(20.+x(2,i))+INFINITY;}
-      else if(x(2,i)<-20){J1+=INFINITY-log(20.-x(2,i));}
-        else {J1+=-1000.*log(20.+x(2,i))-1000.*log(20.-x(2,i));};
+    arma::vec xproj = sys->proj_func(x.col(i));
+    J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt);
   };
 return J1;}
 
-template<class system> void ergodicost<system>::hkfunc(){
+template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
   for(int m=0;m<K;m++){
     for(int n=0;n<K;n++){
-      int L1ind = 100; int L2ind = 100;
-      double d1 = L1ind/L1;
-      double d2 = L2ind/L2;
+      int L1ind = 50; int L2ind = 50;
+      double d1 = 2*L1/L1ind;
+      double d2 = 2*L2/L2ind;
       auto fk = [&](double x1,double x2){
-        return pow(cos(0.5*(m*PI*x1+m*PI*L1)/L1),2.)*pow(cos(0.5*(n*PI*x2+n*PI*L2)/L2),2.);};
-      hk(m,n)=pow(trapint(fk,L1ind,L2ind,d1,d2,-L1,-L2),0.5);      
+        return pow(cos(m*PI*(x1+L1)/(2*L1)),2.)*pow(cos(n*PI*(x2+L2)/(2*L2)),2.);};
+      hk(m,n)=pow(trapint(fk,L1ind,L2ind,d1,d2,0.,0.),0.5);      
     };
   };
 }
 
-template<class system> void ergodicost<system>::phikfunc(){//subtract for 0 to L1
+template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to L1
   for(int m=0;m<K;m++){
     for(int n=0;n<K;n++){
-      int L1ind = 100; int L2ind = 100;
-      double d1 = L1ind/L1;
-      double d2 = L2ind/L2;
+      int L1ind = 50; int L2ind = 50;
+      double d1 = 2*L1/L1ind;
+      double d2 = 2*L2/L2ind;
       auto Fk = [&](double x1,double x2){
-        return phid(x1,x2)*cos(0.5*(m*PI*x1+m*PI*L1)/L1)*cos(0.5*(n*PI*x2+n*PI*L2)/L2)/hk(m,n);};
-      phik(m,n)=trapint(Fk,L1ind,L2ind,d1,d2,-L1,-L2);      
+        return phid(x1,x2)*cos(m*PI*(x1+L1)/(2*L1))*cos(n*PI*(x2+L2)/(2*L2))/hk(m,n);};
+      phik(m,n)=trapint(Fk,L1ind,L2ind,d1,d2,0.,0.);      
     };
   };
 }
@@ -109,8 +116,8 @@ template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   for(int m=0;m<K;m++){ 
     for(int n=0;n<K;n++){
       for(int j=0; j<x.n_cols;j++){
-        xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)-L1; xproj(X2) = xproj(X2)-L2;
-        ck(m,n)+=cos(m*PI*xproj(X1)/L1)*cos(n*PI*xproj(X2)/L2)/hk(m,n);
+        xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
+        ck(m,n)+=cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n);
       };
       ck(m,n)=ck(m,n)/(double)x.n_cols;
     };
