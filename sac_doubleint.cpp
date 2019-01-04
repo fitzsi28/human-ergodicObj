@@ -12,7 +12,7 @@ using namespace std;
 arma::vec xd(double t){
         return {{-2},{0},{-2},{0}};};
 arma::vec unom(double t){
-        return arma::zeros(2,1);};
+        return arma::ones(2,1);};
 
 int main()
 {   ofstream myfile;
@@ -27,7 +27,7 @@ int main()
     arma::vec umax = {10,10};
  
     arma::vec xwrap;
-    syst1.Ucurr = {{0.0},{0.0}}; 
+    syst1.Ucurr = unom(0); 
     syst1.Xcurr = {1.1,-0.1,1,0.1};
     errorcost<DoubleInt> cost (Q,R,xd,&syst1);
     sac<DoubleInt,errorcost<DoubleInt>> sacsys (&syst1,&cost,0.,1.0,umax,unom);

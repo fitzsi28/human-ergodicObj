@@ -7,7 +7,7 @@ const double PI = 3.1415926535987;
 
 class DoubleInt {
     public:
-        double dt;
+        double dt,B=0.01;
         double tcurr=0.0;
         arma::vec Xcurr, Ucurr;
         arma::mat xdlist;

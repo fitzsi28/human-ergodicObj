@@ -8,9 +8,7 @@ class ergodicost {
   system* sys;
   double L1,L2,T;
   int X1,X2;//index of relavant dimensions in xvector
-  arma::mat hk;
-  arma::mat phik;
-  arma::mat ckpast;
+  
   arma::mat cktemp;
   int K;
   inline double trapint(std::function<double(double,double)> f,int N1,int N2,double d1,double d2,double x0,double y0){
@@ -24,18 +22,17 @@ class ergodicost {
   void hkfunc();
   void phikfunc();
   arma::mat ckfunc(const arma::mat& );
-  arma::mat Q2 = {
-        {0.,0.,0.,0.},
-        {0., 20.,0.,0.},
-        {0.,0.,40.,0.},
-        {0.,0.,0.,1.}};
+  
   public:
+    arma::mat hk;
+    arma::mat phik;
+    arma::mat ckpast;
     double Q;
-    arma::mat R;
+    arma::mat Q2,R;
     std::function<double(double,double)> phid;
-    ergodicost(double _Q, arma::mat _R,int _K, int _X1,int _X2,std::function<double(double,double)> _phid,double _L1,double _L2,
+    ergodicost(double _Q,arma::mat _Q2, arma::mat _R,int _K, int _X1,int _X2,std::function<double(double,double)> _phid,double _L1,double _L2,
         double _T,system *_sys){
-      Q=_Q; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
+      Q=_Q;Q2=_Q2; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2;
       hk.set_size(K,K); hkfunc(); 
       phik.set_size(K,K); phikfunc();
@@ -78,11 +75,11 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
       LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5); 
       J1+=arma::as_scalar(LamK*pow((cktemp(k1,k2)-phik(k1,k2)),2.));
     };
-  };J1 = Q*J1; 
+  };J1 = Q*J1; //cout<<"ergodic cost "<<J1<<" ";
   for (int i = 0; i<x.n_cols; i++){
     arma::vec xproj = sys->proj_func(x.col(i));
-    J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt);
-  };
+    J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt); 
+  };//cout<<"total cost "<<J1<<"\n";
 return J1;}
 
 template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
