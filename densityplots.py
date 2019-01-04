@@ -7,8 +7,8 @@ from scipy.interpolate import interp1d
 from scipy.stats import multivariate_normal
 from scipy.stats import gaussian_kde
 
-L1 = 20.0
-L2 = 20.0
+L1 = 10.0
+L2 =10.0
 Knum = 5-1
 NBINS=300
 fontsz=14
@@ -32,17 +32,18 @@ phik = data[5:10]
 ck = data[11:16]
 
 data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIergtest.csv',delimiter=",",dtype=float)
+#data=genfromtxt('/home/kt-fitz/human-ergodicObj/ergtest.csv',delimiter=",",dtype=float)
 data = np.delete(data,0,0)
 x1 = data[0:-1,1]
 x2 = data[0:-1,3]
 
-#xi, yi = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
-xi, yi = np.mgrid[-20:15:NBINS*1j, -10:20:NBINS*1j]
+xi, yi = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
+#xi, yi = np.mgrid[-20:15:NBINS*1j, -10:20:NBINS*1j]
 zphik = fourierRecon(xi.flatten(), yi.flatten(),phik,hk)
 zck = fourierRecon(xi.flatten(), yi.flatten(),ck,hk)
 
 #domain = np.transpose(np.vstack([np.linspace(-L1/2,L1/2,NBINS),np.linspace(-L2/2,L2/2,NBINS)]))
-ref = multivariate_normal.pdf(np.dstack((xi,yi)), mean = [-2,-2], cov=[[1.0,0.0],[0.0,1.]])
+ref = multivariate_normal.pdf(np.dstack((xi,yi)), mean = [-2,-2], cov=[[1.0,0.0],[0.0,1.]])+multivariate_normal.pdf(np.dstack((xi,yi)), mean = [3,3], cov=[[1.0,0.0],[0.0,1.]])
 #delta = multivariate_normal.pdf(np.dstack((xi,yi)), mean = [0,0], cov=[[0.0025,0.],[0.,0.01]])
 
 

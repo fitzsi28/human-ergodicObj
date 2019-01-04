@@ -56,7 +56,7 @@ template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, co
   double LamK, Dx1F,Dx2F;
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
-      LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5);
+      LamK = pow(1+(pow(k1,2)+pow(k2,2)),-1.5);
       Dx1F = arma::as_scalar((-k1*PI/(2*L1*hk(k1,k2)))*sin(k1*PI*xproj(X1)/(2*L1))*cos(k2*PI*xproj(X2)/(2*L2)));
       Dx2F = arma::as_scalar((-k2*PI/(2*L2*hk(k1,k2)))*cos(k1*PI*xproj(X1)/(2*L1))*sin(k2*PI*xproj(X2)/(2*L2)));
       a(X1)+=Q*LamK*(cktemp(k1,k2)-phik(k1,k2))/T*Dx1F;
@@ -72,7 +72,7 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
   cktemp = ckpast+ckfunc(x);
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
-      LamK = pow(1+(pow(k1,2)+pow(k2,2)),1.5); 
+      LamK = pow(1+(pow(k1,2)+pow(k2,2)),-1.5); 
       J1+=arma::as_scalar(LamK*pow((cktemp(k1,k2)-phik(k1,k2)),2.));
     };
   };J1 = Q*J1; //cout<<"ergodic cost "<<J1<<" ";
@@ -85,7 +85,7 @@ return J1;}
 template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
   for(int m=0;m<K;m++){
     for(int n=0;n<K;n++){
-      int L1ind = 50; int L2ind = 50;
+      int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
       double d2 = 2*L2/L2ind;
       auto fk = [&](double x1,double x2){
@@ -98,7 +98,7 @@ template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
 template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to L1
   for(int m=0;m<K;m++){
     for(int n=0;n<K;n++){
-      int L1ind = 50; int L2ind = 50;
+      int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
       double d2 = 2*L2/L2ind;
       auto Fk = [&](double x1,double x2){

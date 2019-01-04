@@ -28,7 +28,7 @@ int main(){
         {0., 5.,0.,0.},
         {0.,0.,1.,0.},
         {0.,0.,0.,1.}};
-  ergodicost<CartPend> cost (q,Q,R,20,0,1,xd,PI,20.,1.0,&syst1);
+  ergodicost<CartPend> cost (q,Q,R,5,0,1,xd,PI,20.,1.0,&syst1);
     
   arma::vec umax = {40};
   sac<CartPend,ergodicost<CartPend>> sacsys (&syst1,&cost,0.,2.0,umax,unom);
