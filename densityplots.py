@@ -38,6 +38,7 @@ def fourierRecon(xt,yt,cks,hk):
     return z
 
 data = genfromtxt('/home/kt-fitz/human-ergodicObj/DI_coefficients.csv',delimiter=",",dtype=float)
+Knum=np.shape(data)[1]-1
 hk = data[0:Knum+1,0:Knum+1]
 phik = data[Knum+1:Knum+Knum+2]
 ck = data[Knum+Knum+2:Knum+Knum+Knum+4]
@@ -80,7 +81,7 @@ ax = plt.subplot()
 for label in (ax.get_xticklabels() + ax.get_yticklabels()):
     label.set_fontsize(16) 
     #plt.hexbin(xsob, ysob,gridsize = 40, extent =pltarea,norm=colors.Normalize(vmin=0,vmax=16))
-plt.pcolormesh(xi, yi, zphik.reshape(xi.shape),norm=colors.Normalize(vmin=0,vmax=0.3))
+plt.pcolormesh(xi, yi, zphik.reshape(xi.shape))#,norm=colors.Normalize(vmin=0,vmax=0.3))
 plt.plot(x1,x2,'ko',linewidth=2, markersize=1)
 #plt.yticks(np.array([-3,0,3]))
 plt.title("Fourier Recon of Phik's", **title_font)

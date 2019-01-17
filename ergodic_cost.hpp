@@ -42,7 +42,7 @@ class ergodicost {
     std::function<double(double,double)> phid;
     ergodicost(double _Q,arma::mat _Q2, arma::mat _R,int _K, int _X1,int _X2,std::function<double(double,double)> _phid,double _L1,double _L2,
         double _T,system *_sys){
-      Q=_Q;Q2=_Q2; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
+      Q=_Q; Q2=_Q2; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2;
       hk.set_size(K,K); hkfunc(); 
       phik.set_size(K,K); phikfunc();
@@ -56,12 +56,22 @@ class ergodicost {
 
 template<class system> double ergodicost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
-      return arma::as_scalar((xproj.t()*Q2*xproj+u.t()*R*u)/2);
+      arma::mat Qtemp = {
+        {pow(xproj(0)/L1,8),0.,0.,0.},
+        {0.,0.,0.,0.},
+        {0.,0.,pow(xproj(2)/L2,8),0.},
+        {0.,0.,0.,0.}};
+      return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
       }
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
-  a=a+Q2*xproj;
+  arma::mat Qtemp = {
+        {pow(xproj(0)/L1,8),0.,0.,0.},
+        {0.,0.,0.,0.},
+        {0.,0.,pow(xproj(2)/L2,8),0.},
+        {0.,0.,0.,0.}};
+  a=a+5*Qtemp*xproj;
   xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
   double LamK, Dx1F,Dx2F;
   for(int k1=0;k1<K;k1++){

@@ -28,24 +28,24 @@ int main()
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
     arma::mat Q = {
-        {0.45,0.,0.,0.},
+        {1.,0.,0.,0.},
         {0.,0.,0.,0.},
-        {0.,0.,0.45,0.},
+        {0.,0.,1.,0.},
         {0.,0.,0.,0.}};
-    arma::mat R = 0.3*arma::eye(2,2); double q=100.;
+    arma::mat R = 0.3*arma::eye(2,2); double q=1000.;
     arma::vec umax = {5,5};
     ergodicost<DoubleInt> cost (q,Q,R,10,0,2,phid,xbound,ybound,1.0,&syst1);
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
  
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
-    syst1.Xcurr = {2,-0.1,2,0.1};
+    syst1.Xcurr = {0,-0.1,0,0.1};
     
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
     myfile<<"time,x,xdot,y,ydot,u\n";
  
-    while (syst1.tcurr<60.0){
+    while (syst1.tcurr<30.0){
     if(fmod(syst1.tcurr,5)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 
