@@ -13,8 +13,8 @@ class ergodicost {
   int K;
   inline double trapint(std::function<double(double,double)> f){
     double total = 0.,x0,y0,xf,yf;
-    x0=-L1,y0=-L2,xf=L1,yf=L2;
-    //x0=0.,y0=0.,xf=2*L1,yf=2*L2;
+    //x0=-L1,y0=-L2,xf=L1,yf=L2;
+    x0=0.,y0=0.,xf=2*L1,yf=2*L2;
     int N1=50,N2=50; double d1=(2.*L1/N1);double d2=(2.*L2/N2);
     total = (d1*d2/4)*(f(x0,y0)+f(x0,yf)+f(xf,y0)+f(xf,yf));
     for(int i = 1; i<N1;i++){
@@ -79,7 +79,7 @@ return a;}
 template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
   
   double J1 = 0.; double LamK;
-  cktemp = ckpast+ckfunc(x);
+  cktemp = (ckpast*sys->tcurr/(sys->tcurr+T))+ckfunc(x);
   for(int k1=0;k1<K;k1++){
     for(int k2=0;k2<K;k2++){
       LamK = pow(1+(pow(k1,2)+pow(k2,2)),-1.5); 
@@ -112,7 +112,7 @@ template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to 
       double d1 = 2*L1/L1ind;
       double d2 = 2*L2/L2ind;
       auto Fk = [&](double x1,double x2){
-        return phid(x1+L1,x2+L2)*cos(m*PI*(x1)/(2*L1))*cos(n*PI*(x2)/(2*L2))/hk(m,n);};
+        return phid(x1,x2)*cos(m*PI*(x1)/(2*L1))*cos(n*PI*(x2)/(2*L2))/hk(m,n);};
       phik(m,n)=trapint(Fk);      
     };
   };
@@ -124,19 +124,15 @@ template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
     for(int n=0;n<K;n++){
       auto Fk = [&](double x1,double x2){
         return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};
-      xproj = sys->proj_func(x.col(0)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-      ck(m,n)=Fk(xproj(X1),xproj(X2));
-      xproj = sys->proj_func(x.col(x.n_cols-1)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-      ck(m,n)+=Fk(xproj(X1),xproj(X2));
-      for(int j=1; j<x.n_cols-1;j++){
+      for(int j=0; j<x.n_cols;j++){
         xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-        ck(m,n)+=2*Fk(xproj(X1),xproj(X2));;
+        ck(m,n)+=sys->dt*Fk(xproj(X1),xproj(X2)); //if(m==0&n==0)cout<<Fk(xproj(X1),xproj(X2))<<"   ";
       };
-      ck(m,n)=sys->dt*ck(m,n)/(2*(double)x.n_cols);
+      ck(m,n)=ck(m,n)/(sys->tcurr+x.n_cols*sys->dt);
     };
   };
 return ck;}
 template<class system> void ergodicost<system>::ckmemory(const arma::vec& x){
-  ckpast=ckpast+ckfunc(x);//cout<<ckfunc(x)<<"\n";
+  ckpast=(ckpast*sys->tcurr/(sys->tcurr+sys->dt))+ckfunc(x);//cout<<ckfunc(x)<<"\n";
 }
 #endif
