@@ -11,11 +11,21 @@ class ergodicost {
   
   arma::mat cktemp;
   int K;
-  inline double trapint(std::function<double(double,double)> f,int N1,int N2,double d1,double d2,double x0,double y0){
-    double total = 0.;double x1; double x2;
-    for(int j=0; j<N2;j++){
-      for(int k=0;k<N1;k++){ x1 = x0 +k*d1; x2 = y0+j*d1;
-        total+=(1./4.)*d1*d2*(f(k*d1,j*d2)+f(k*d1,(j+1)*d2)+f((k+1)*d1,j*d2)+f((k+1)*d1,(j+1)*d2));
+  inline double trapint(std::function<double(double,double)> f){
+    double total = 0.,x0,y0,xf,yf;
+    x0=-L1,y0=-L2,xf=L1,yf=L2;
+    //x0=0.,y0=0.,xf=2*L1,yf=2*L2;
+    int N1=50,N2=50; double d1=(2.*L1/N1);double d2=(2.*L2/N2);
+    total = (d1*d2/4)*(f(x0,y0)+f(x0,yf)+f(xf,y0)+f(xf,yf));
+    for(int i = 1; i<N1;i++){
+      total+=(d1*d2/2)*(f(x0+i*d1,y0)+f(x0+i*d1,yf));
+    }
+    for(int j = 1; j<N2;j++){
+      total+=(d1*d2/2)*(f(x0,y0+j*d2)+f(xf,y0+j*d2));
+    }
+    for(int k=0; k<N2;k++){
+      for(int j=0;j<N1;j++){ 
+        total+=d1*d2*f(x0+k*d1,y0+j*d2);
       }
     }
   return total;};
@@ -89,21 +99,21 @@ template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
       double d1 = 2*L1/L1ind;
       double d2 = 2*L2/L2ind;
       auto fk = [&](double x1,double x2){
-        return pow(cos(m*PI*(x1+L1)/(2*L1)),2.)*pow(cos(n*PI*(x2+L2)/(2*L2)),2.);};
-      hk(m,n)=pow(trapint(fk,L1ind,L2ind,d1,d2,0.,0.),0.5);      
+        return pow(cos(m*PI*(x1)/(2*L1)),2.)*pow(cos(n*PI*(x2)/(2*L2)),2.);};
+      hk(m,n)=pow(trapint(fk),0.5);      
     };
   };
 }
 
 template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to L1
-  for(int m=0;m<K;m++){
-    for(int n=0;n<K;n++){
+  for(int n=0;n<K;n++){
+    for(int m=0;m<K;m++){
       int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
       double d2 = 2*L2/L2ind;
       auto Fk = [&](double x1,double x2){
-        return phid(x1,x2)*cos(m*PI*(x1+L1)/(2*L1))*cos(n*PI*(x2+L2)/(2*L2))/hk(m,n);};
-      phik(m,n)=trapint(Fk,L1ind,L2ind,d1,d2,0.,0.);      
+        return phid(x1+L1,x2+L2)*cos(m*PI*(x1)/(2*L1))*cos(n*PI*(x2)/(2*L2))/hk(m,n);};
+      phik(m,n)=trapint(Fk);      
     };
   };
 }
@@ -112,11 +122,17 @@ template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   arma::mat ck = arma::zeros<arma::mat>(K,K); 
   for(int m=0;m<K;m++){ 
     for(int n=0;n<K;n++){
-      for(int j=0; j<x.n_cols;j++){
+      auto Fk = [&](double x1,double x2){
+        return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};
+      xproj = sys->proj_func(x.col(0)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
+      ck(m,n)=Fk(xproj(X1),xproj(X2));
+      xproj = sys->proj_func(x.col(x.n_cols-1)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
+      ck(m,n)+=Fk(xproj(X1),xproj(X2));
+      for(int j=1; j<x.n_cols-1;j++){
         xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-        ck(m,n)+=cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n);
+        ck(m,n)+=2*Fk(xproj(X1),xproj(X2));;
       };
-      ck(m,n)=ck(m,n)/(double)x.n_cols;
+      ck(m,n)=sys->dt*ck(m,n)/(2*(double)x.n_cols);
     };
   };
 return ck;}
