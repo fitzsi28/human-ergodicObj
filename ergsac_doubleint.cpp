@@ -1,8 +1,9 @@
 #include <iostream>
-
+#include<string>
 #include <fstream>
 #include<math.h>
 #include<armadillo>
+#include <opencv2/opencv.hpp>//namespace cv
 using namespace std;
 
 #include"doubleint.hpp"
@@ -10,7 +11,20 @@ using namespace std;
 #include"SAC.hpp"
 #include"rk4_int.hpp"
 
+string imageName("Abraham_Lincoln_head_on_shoulders_photo_portrait.jpg");
+//cv::Mat image;
+
+
+
 double xbound = 5,ybound = 5;
+double phid2(void){
+  static cv::Mat image = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+  cout<<image.size().height<<" "<<image.size().width<<" ";
+  //cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE ); 
+  //cv::imshow( "Display window", image );                
+  //cv::waitKey(0); 
+  return 0;};
+
 double phid(double x1, double x2){
   arma::vec lbounds = {{-xbound},{-ybound}};
   arma::vec x = {{x1},{x2}};
@@ -20,21 +34,19 @@ double phid(double x1, double x2){
   double dist1 = arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
   double dist2 = arma::as_scalar(arma::expmat(-0.5*(x-Mu2).t()*Sig.i()*(x-Mu2))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
 return dist1+dist2;};
+
 arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   ofstream myfile;
+{   phid2();
+  
+    ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat Q = {
-        {1.,0.,0.,0.},
-        {0.,0.,0.,0.},
-        {0.,0.,1.,0.},
-        {0.,0.,0.,0.}};
     arma::mat R = 0.3*arma::eye(2,2); double q=1000.;
     arma::vec umax = {5,5};
-    ergodicost<DoubleInt> cost (q,Q,R,10,0,2,phid,xbound,ybound,1.0,&syst1);
+    ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,1.0,&syst1);
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,1.0,umax,unom);
  
     arma::vec xwrap;
@@ -45,7 +57,7 @@ int main()
        
     myfile<<"time,x,xdot,y,ydot,u\n";
  
-    while (syst1.tcurr<30.0){
+    while (syst1.tcurr<0.1){
     if(fmod(syst1.tcurr,5)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 

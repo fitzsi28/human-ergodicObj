@@ -7,8 +7,8 @@ from scipy.interpolate import interp1d
 from scipy.stats import multivariate_normal
 from scipy.stats import gaussian_kde
 
-L1 = 10.0
-L2 =10.0
+L1 = 2*np.pi#10.0#
+L2 =20.0
 Knum = 10-1
 NBINS=300
 fontsz=14
@@ -37,18 +37,19 @@ def fourierRecon(xt,yt,cks,hk):
             z = z+cks[j,k]*np.cos(j*np.pi*x/L1)*np.cos(k*np.pi*y/L2)/hk[j,k]
     return z
 
-data = genfromtxt('/home/kt-fitz/human-ergodicObj/DI_coefficients.csv',delimiter=",",dtype=float)
+#data = genfromtxt('/home/kt-fitz/human-ergodicObj/DI_coefficients.csv',delimiter=",",dtype=float)
+data = genfromtxt('/home/kt-fitz/human-ergodicObj/CP_coefficients.csv',delimiter=",",dtype=float)
 Knum=np.shape(data)[1]-1
 hk = data[0:Knum+1,0:Knum+1]
 phik = data[Knum+1:Knum+Knum+2]
 ck = data[Knum+Knum+2:Knum+Knum+Knum+4]
 
-data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIergtest.csv',delimiter=",",dtype=float)
-#data=genfromtxt('/home/kt-fitz/human-ergodicObj/ergtest.csv',delimiter=",",dtype=float)
+#data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIergtest.csv',delimiter=",",dtype=float)
+data=genfromtxt('/home/kt-fitz/human-ergodicObj/CPergtest.csv',delimiter=",",dtype=float)
 data = np.delete(data,0,0)
 tlist = data[0:-1,0]
 x1 = data[0:-1,1]+(L1/2.)
-x2 = data[0:-1,3]+(L2/2.)
+x2 = data[0:-1,2]+(L2/2.)#data[0:-1,3]+(L2/2.)#
 #X = np.transpose(np.vstack([x1,x2]))
 #ck2 = ckfunc(tlist,X,hk)
 

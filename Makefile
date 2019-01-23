@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named sac_cartpend
+# Target rules for targets named ergsac_doubleint
 
 # Build rule for target.
-sac_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sac_cartpend
-.PHONY : sac_cartpend
+ergsac_doubleint: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
+.PHONY : ergsac_doubleint
 
 # fast build rule for target.
-sac_cartpend/fast:
-	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/build
-.PHONY : sac_cartpend/fast
+ergsac_doubleint/fast:
+	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
+.PHONY : ergsac_doubleint/fast
 
 #=============================================================================
 # Target rules for targets named ergsac_cartpend
@@ -135,32 +135,6 @@ ergsac_cartpend: cmake_check_build_system
 ergsac_cartpend/fast:
 	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
 .PHONY : ergsac_cartpend/fast
-
-#=============================================================================
-# Target rules for targets named sac_doubleint
-
-# Build rule for target.
-sac_doubleint: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sac_doubleint
-.PHONY : sac_doubleint
-
-# fast build rule for target.
-sac_doubleint/fast:
-	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/build
-.PHONY : sac_doubleint/fast
-
-#=============================================================================
-# Target rules for targets named ergsac_doubleint
-
-# Build rule for target.
-ergsac_doubleint: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
-.PHONY : ergsac_doubleint
-
-# fast build rule for target.
-ergsac_doubleint/fast:
-	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
-.PHONY : ergsac_doubleint/fast
 
 ergsac_cartpend.o: ergsac_cartpend.cpp.o
 
@@ -216,60 +190,6 @@ ergsac_doubleint.cpp.s:
 	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/ergsac_doubleint.cpp.s
 .PHONY : ergsac_doubleint.cpp.s
 
-sac_cartpend.o: sac_cartpend.cpp.o
-
-.PHONY : sac_cartpend.o
-
-# target to build an object file
-sac_cartpend.cpp.o:
-	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.o
-.PHONY : sac_cartpend.cpp.o
-
-sac_cartpend.i: sac_cartpend.cpp.i
-
-.PHONY : sac_cartpend.i
-
-# target to preprocess a source file
-sac_cartpend.cpp.i:
-	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.i
-.PHONY : sac_cartpend.cpp.i
-
-sac_cartpend.s: sac_cartpend.cpp.s
-
-.PHONY : sac_cartpend.s
-
-# target to generate assembly for a file
-sac_cartpend.cpp.s:
-	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.s
-.PHONY : sac_cartpend.cpp.s
-
-sac_doubleint.o: sac_doubleint.cpp.o
-
-.PHONY : sac_doubleint.o
-
-# target to build an object file
-sac_doubleint.cpp.o:
-	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.o
-.PHONY : sac_doubleint.cpp.o
-
-sac_doubleint.i: sac_doubleint.cpp.i
-
-.PHONY : sac_doubleint.i
-
-# target to preprocess a source file
-sac_doubleint.cpp.i:
-	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.i
-.PHONY : sac_doubleint.cpp.i
-
-sac_doubleint.s: sac_doubleint.cpp.s
-
-.PHONY : sac_doubleint.s
-
-# target to generate assembly for a file
-sac_doubleint.cpp.s:
-	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.s
-.PHONY : sac_doubleint.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -277,23 +197,15 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... sac_cartpend"
-	@echo "... ergsac_cartpend"
-	@echo "... sac_doubleint"
 	@echo "... edit_cache"
 	@echo "... ergsac_doubleint"
+	@echo "... ergsac_cartpend"
 	@echo "... ergsac_cartpend.o"
 	@echo "... ergsac_cartpend.i"
 	@echo "... ergsac_cartpend.s"
 	@echo "... ergsac_doubleint.o"
 	@echo "... ergsac_doubleint.i"
 	@echo "... ergsac_doubleint.s"
-	@echo "... sac_cartpend.o"
-	@echo "... sac_cartpend.i"
-	@echo "... sac_cartpend.s"
-	@echo "... sac_doubleint.o"
-	@echo "... sac_doubleint.i"
-	@echo "... sac_doubleint.s"
 .PHONY : help
 
 

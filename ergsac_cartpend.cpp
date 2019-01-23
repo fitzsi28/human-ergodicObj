@@ -10,9 +10,11 @@ using namespace std;
 #include"SAC.hpp"
 #include"rk4_int.hpp"
 
+double xbound = PI,ybound = 10.;
 double xd(double x1, double x2){
+  arma::vec lbounds = {{-xbound},{-ybound}};
   arma::vec x = {{x1},{x2}};
-  arma::vec Mu = {{0.},{0.}};
+  arma::vec Mu = {{0.},{0.}}; Mu=Mu-lbounds;
   arma::mat Sig = {{0.1,0.},{0.,2.}};
 return arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));};
 arma::vec unom(double t){
@@ -20,15 +22,10 @@ arma::vec unom(double t){
 
 int main(){
   ofstream myfile;
-  myfile.open ("ergtest.csv");
+  myfile.open ("CPergtest.csv");
   CartPend syst1 (1.0,0.1,9.81,2.0,0.01);
-  arma::mat R = 0.01*arma::eye(1,1); double q=100.;
-    arma::mat Q = {
-        {0.,0.,0.,0.},
-        {0., 5.,0.,0.},
-        {0.,0.,1.,0.},
-        {0.,0.,0.,1.}};
-  ergodicost<CartPend> cost (q,Q,R,5,0,1,xd,PI,20.,1.0,&syst1);
+  arma::mat R = 0.01*arma::eye(1,1); double q=500.;
+  ergodicost<CartPend> cost (q,R,5,0,1,xd,xbound,ybound,1.0,&syst1);
     
   arma::vec umax = {40};
   sac<CartPend,ergodicost<CartPend>> sacsys (&syst1,&cost,0.,2.0,umax,unom);
@@ -54,5 +51,11 @@ int main(){
     } 
        
     myfile.close();
+    ofstream coeff;
+    coeff.open("CP_coefficients.csv");
+    cost.hk.save(coeff,arma::csv_ascii);
+    cost.phik.save(coeff,arma::csv_ascii);
+    cost.ckpast.save(coeff,arma::csv_ascii);
+    coeff.close();
 }
 
