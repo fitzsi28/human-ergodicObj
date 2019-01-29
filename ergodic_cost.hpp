@@ -57,16 +57,16 @@ class ergodicost {
 template<class system> double ergodicost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
       arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-      Qtemp(X1,X1)= pow(xproj(X1)/L1,8);
-      Qtemp(X2,X2) = pow(xproj(X2)/L2,8);
+      //Qtemp(X1,X1)= pow(xproj(X1)/L1,8);
+      //Qtemp(X2,X2) = pow(xproj(X2)/L2,8);
       return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
       }
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-  Qtemp(X1,X1)= pow(xproj(X1)/L1,8);
-  Qtemp(X2,X2) = pow(xproj(X2)/L2,8);
+  //Qtemp(X1,X1)= pow(xproj(X1)/L1,8);
+  //Qtemp(X2,X2) = pow(xproj(X2)/L2,8);
   a=a+5*Qtemp*xproj;
   xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
   double LamK, Dx1F,Dx2F;
