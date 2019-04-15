@@ -7,8 +7,8 @@ from scipy.interpolate import interp1d
 from scipy.stats import multivariate_normal
 from scipy.stats import gaussian_kde
 
-L1 = 456#10.0#456#2*np.pi#
-L2 =599#10.0#
+L1 = 10.0#2200#2*np.pi#
+L2 =10.0#2200#
 Knum = 10-1
 NBINS=300
 fontsz=14
@@ -50,8 +50,7 @@ data = np.delete(data,0,0)
 tlist = data[0:-1,0]
 x1 = data[0:-1,1]+(L1/2.)
 x2 = data[0:-1,3]+(L2/2.)#data[0:-1,2]+(L2/2.)#
-#X = np.transpose(np.vstack([x1,x2]))
-#ck2 = ckfunc(tlist,X,hk)
+cost = data[0:-1,-1]
 
 xj, yj = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
 xi, yi = np.mgrid[0:L1:NBINS*1j, 0:L2:NBINS*1j]
@@ -63,22 +62,11 @@ zck = fourierRecon(xi.flatten(), yi.flatten(),ck,hk)
 ref = multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-2,1], cov=[[0.5,0.0],[0.0,0.5]])+multivariate_normal.pdf(np.dstack((xj,yj)), mean = [3.,-1], cov=[[0.5,0.0],[0.0,0.5]])
 #delta = multivariate_normal.pdf(np.dstack((xi,yi)), mean = [0,0], cov=[[0.0025,0.],[0.,0.01]])
 
-"""
-#pltarea=[-L1/2,L1/2,-L2/2,L2/2]
-ax = plt.subplot()
-for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-    label.set_fontsize(16) 
-plt.pcolormesh(xj, yj, ref.reshape(xj.shape),norm=colors.Normalize(vmin=0,vmax=0.3))
-plt.title("Reference Distribution",**title_font)
-plt.xlabel ( r"$x$",**axis_font)
-plt.ylabel ( r"$y$",rotation='horizontal',**axis_font)
-plt.margins(0)
-cbar = plt.colorbar()
-cbar.ax.tick_params(labelsize=fontsz)
-cbar.ax.set_ylabel('Density',fontsize=16)
-plt.show()
-"""
-ax = plt.subplot()
+plt.figure()
+plt.plot(tlist,cost)
+
+plt.figure()
+ax = plt.gca()
 for label in (ax.get_xticklabels() + ax.get_yticklabels()):
     label.set_fontsize(16) 
     #plt.hexbin(xsob, ysob,gridsize = 40, extent =pltarea,norm=colors.Normalize(vmin=0,vmax=16))
@@ -93,9 +81,10 @@ plt.axes().set_aspect('equal')
 cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
-plt.show()
 
-ax = plt.subplot()
+
+plt.figure()
+ax = plt.gca()
 for label in (ax.get_xticklabels() + ax.get_yticklabels()):
     label.set_fontsize(16) 
     #plt.hexbin(xsob, ysob,gridsize = 40, extent =pltarea,norm=colors.Normalize(vmin=0,vmax=16))
@@ -110,9 +99,11 @@ plt.axes().set_aspect('equal')
 cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
+
 plt.show()
 """
-ax = plt.subplot()
+plt.figure()
+ax = plt.gca()
 for label in (ax.get_xticklabels() + ax.get_yticklabels()):
     label.set_fontsize(16) 
     #plt.hexbin(xsob, ysob,gridsize = 40, extent =pltarea,norm=colors.Normalize(vmin=0,vmax=16))
@@ -127,5 +118,4 @@ plt.axes().set_aspect('equal')
 cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
-plt.show()
 """

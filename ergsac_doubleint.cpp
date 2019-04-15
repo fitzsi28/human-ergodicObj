@@ -42,11 +42,11 @@ int main()
  
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
-    syst1.Xcurr = {0.,0.01,0,0.01};
+    syst1.Xcurr = {0.,0.01,0.,0.01};
     
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
-    myfile<<"time,x,xdot,y,ydot,u\n";
+    myfile<<"time,x,xdot,y,ydot,u,cost\n";
  
     while (syst1.tcurr<30.0){
     if(fmod(syst1.tcurr,5)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
@@ -54,7 +54,8 @@ int main()
     xwrap = syst1.proj_func(syst1.Xcurr); 
     myfile<<xwrap(0)<<","<<xwrap(1)<<",";//myfile<<syst1.Xcurr(0)<<","<<syst1.Xcurr(1)<<",";
     myfile<<xwrap(2)<<","<<xwrap(3)<<",";//myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
-    myfile<<syst1.Ucurr(0)<<"\n";
+    myfile<<syst1.Ucurr(0)<<",";
+    myfile<<cost.calc_cost(syst1.Xcurr,syst1.Ucurr)<<"\n";
     syst1.step();
     sacsys.SAC_calc();
     syst1.Ucurr = sacsys.ulist.col(0); 
