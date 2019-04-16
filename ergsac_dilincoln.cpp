@@ -17,18 +17,19 @@ double xbound = 5,ybound = 5;//2200/2;
 double phid(double x1, double x2){
   double ind1 = x2*220.; double ind2 = x1*220.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
-  double totalInt = cv::mean(image)[0]*2200*2200;//cout<<totalInt<<" ";
-  intensity = intensity/(255*2);//totalInt;//(255*7);
+  double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);//cout<<totalInt<<" ";
+  intensity = intensity/totalInt;//(255*7);
   return intensity;};
 
 arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   //string imageName("lincoln2.png");
-    string imageName("gauss.png");
+{   string imageName("lincoln2.png");
+    //string imageName("gauss.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-    image = cv::Scalar::all(255)-imagetemp;cout<<cv::mean(image)[0]*2200*2200<<"\n";
+    image = (cv::Scalar::all(255)-imagetemp);cout<<cv::mean(image)[0]<<"\n";
+    cv::flip(image,image,-1);
     cout<<image.size().width<<" "<<image.size().height<<"\n"; 
     //double imgTotal = 0.;
     //xbound = image.size().width/2.; ybound = image.size().height/2.;
@@ -43,13 +44,13 @@ int main()
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
-    syst1.Xcurr = {0.5,0.01,4,0.01};
+    syst1.Xcurr = {3,0.01,4.5,0.01};
     
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
     myfile<<"time,x,xdot,y,ydot,ux,uy,ergcost\n";
  
-    while (syst1.tcurr<30.){
+    while (syst1.tcurr<60.){
     if(fmod(syst1.tcurr,5)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 

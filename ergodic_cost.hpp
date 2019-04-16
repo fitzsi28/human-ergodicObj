@@ -23,8 +23,8 @@ class ergodicost {
     for(int j = 1; j<N2;j++){
       total+=(d1*d2/2)*(f(x0,y0+j*d2)+f(xf,y0+j*d2));
     }
-    for(int k=0; k<N2;k++){
-      for(int j=0;j<N1;j++){ 
+    for(int k=1; k<N2;k++){
+      for(int j=1;j<N1;j++){ 
         total+=d1*d2*f(x0+k*d1,y0+j*d2);
       }
     }
@@ -57,16 +57,16 @@ class ergodicost {
 template<class system> double ergodicost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
       arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-      Qtemp(X1,X1)= pow(xproj(X1)/(L1+1),8);
-      Qtemp(X2,X2) = pow(xproj(X2)/(L2+2),8);
+      Qtemp(X1,X1)= pow(xproj(X1)/(L1-(0.0*L1)),8);
+      Qtemp(X2,X2) = pow(xproj(X2)/(L2-(0.0*L2)),8);
       return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
       }
 template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-  Qtemp(X1,X1)= pow(xproj(X1)/(L1+1),8);
-  Qtemp(X2,X2) = pow(xproj(X2)/(L2+1),8);
+  Qtemp(X1,X1)= pow(xproj(X1)/(L1-(0.0*L1)),8);
+  Qtemp(X2,X2) = pow(xproj(X2)/(L2-(0.0*L2)),8);
   a=a+5*Qtemp*xproj;
   xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
   double LamK, Dx1F,Dx2F;
@@ -112,7 +112,8 @@ template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
 }
 
 template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to L1
-  for(int n=0;n<K;n++){
+  cout<<trapint(phid)<<"\n";
+   for(int n=0;n<K;n++){
     for(int m=0;m<K;m++){
       int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
