@@ -9,7 +9,7 @@ from scipy.stats import gaussian_kde
 
 L1 = 10.0#2200#2*np.pi#
 L2 =10.0#2200#
-Knum = 10-1
+Knum = 30-1
 NBINS=300
 fontsz=14
 title_font = {'fontname':'Liberation Sans', 'size':'20', 'color':'black', 'weight':'normal'}#,'verticalalignment':'bottom'} # Bottom vertical alignment for more space

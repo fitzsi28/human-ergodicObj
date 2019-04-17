@@ -44,8 +44,10 @@ int main()
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
-    syst1.Xcurr = {3,0.01,4.5,0.01};
-    
+    random_device rd; mt19937 eng(rd());
+    uniform_real_distribution<> distr(-5,5);
+    syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};
+    cout<<syst1.Xcurr<<"\n";
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
     myfile<<"time,x,xdot,y,ydot,ux,uy,ergcost\n";
