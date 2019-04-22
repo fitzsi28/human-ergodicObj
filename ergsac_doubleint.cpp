@@ -34,7 +34,7 @@ int main()
 {   ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat R = 0.01*arma::eye(2,2); double q=1000.;
+    arma::mat R = 0.01*arma::eye(2,2); double q=1500.;
     arma::vec umax = {40.0,40.0};
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);
@@ -61,7 +61,10 @@ int main()
     syst1.step();
     sacsys.SAC_calc();
     syst1.Ucurr = sacsys.ulist.col(0); 
-    sacsys.unom_shift(); cost.ckmemory(syst1.Xcurr);  
+    sacsys.unom_shift(); 
+    //double start_time = omp_get_wtime();
+    cost.ckmemory(syst1.Xcurr); 
+    //cout <<"ck calc time:"<< 1000 * (omp_get_wtime() - start_time)<<endl;
     } 
       
     myfile.close();

@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/kt-fitz/human-ergodicObj
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,19 +111,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ergsac_doubleint
-
-# Build rule for target.
-ergsac_doubleint: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
-.PHONY : ergsac_doubleint
-
-# fast build rule for target.
-ergsac_doubleint/fast:
-	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
-.PHONY : ergsac_doubleint/fast
-
-#=============================================================================
 # Target rules for targets named ergsac_dilincoln
 
 # Build rule for target.
@@ -137,44 +124,17 @@ ergsac_dilincoln/fast:
 .PHONY : ergsac_dilincoln/fast
 
 #=============================================================================
-# Target rules for targets named ergsac_digauss
+# Target rules for targets named ergsac_doubleint
 
 # Build rule for target.
-ergsac_digauss: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_digauss
-.PHONY : ergsac_digauss
+ergsac_doubleint: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
+.PHONY : ergsac_doubleint
 
 # fast build rule for target.
-ergsac_digauss/fast:
-	$(MAKE) -f CMakeFiles/ergsac_digauss.dir/build.make CMakeFiles/ergsac_digauss.dir/build
-.PHONY : ergsac_digauss/fast
-
-ergsac_digauss.o: ergsac_digauss.cpp.o
-
-.PHONY : ergsac_digauss.o
-
-# target to build an object file
-ergsac_digauss.cpp.o:
-	$(MAKE) -f CMakeFiles/ergsac_digauss.dir/build.make CMakeFiles/ergsac_digauss.dir/ergsac_digauss.cpp.o
-.PHONY : ergsac_digauss.cpp.o
-
-ergsac_digauss.i: ergsac_digauss.cpp.i
-
-.PHONY : ergsac_digauss.i
-
-# target to preprocess a source file
-ergsac_digauss.cpp.i:
-	$(MAKE) -f CMakeFiles/ergsac_digauss.dir/build.make CMakeFiles/ergsac_digauss.dir/ergsac_digauss.cpp.i
-.PHONY : ergsac_digauss.cpp.i
-
-ergsac_digauss.s: ergsac_digauss.cpp.s
-
-.PHONY : ergsac_digauss.s
-
-# target to generate assembly for a file
-ergsac_digauss.cpp.s:
-	$(MAKE) -f CMakeFiles/ergsac_digauss.dir/build.make CMakeFiles/ergsac_digauss.dir/ergsac_digauss.cpp.s
-.PHONY : ergsac_digauss.cpp.s
+ergsac_doubleint/fast:
+	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
+.PHONY : ergsac_doubleint/fast
 
 ergsac_dilincoln.o: ergsac_dilincoln.cpp.o
 
@@ -236,14 +196,10 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... rebuild_cache"
+	@echo "... ergsac_dilincoln"
 	@echo "... edit_cache"
 	@echo "... ergsac_doubleint"
-	@echo "... ergsac_dilincoln"
-	@echo "... rebuild_cache"
-	@echo "... ergsac_digauss"
-	@echo "... ergsac_digauss.o"
-	@echo "... ergsac_digauss.i"
-	@echo "... ergsac_digauss.s"
 	@echo "... ergsac_dilincoln.o"
 	@echo "... ergsac_dilincoln.i"
 	@echo "... ergsac_dilincoln.s"

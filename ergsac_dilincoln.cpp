@@ -52,7 +52,7 @@ int main()
        
     myfile<<"time,x,xdot,y,ydot,ux,uy,ergcost\n";
  
-    while (syst1.tcurr<60.){
+    while (syst1.tcurr<30.){
     if(fmod(syst1.tcurr,5)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 

@@ -2,6 +2,7 @@
 #define ERGODICCOST_HPP
 #include<armadillo>
 #include<math.h>
+#include<omp.h>
 
 template <class system>
 class ergodicost {
@@ -44,8 +45,16 @@ class ergodicost {
         double _T,system *_sys){
       Q=_Q; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2;
-      hk.set_size(K,K); hkfunc(); 
-      phik.set_size(K,K); phikfunc();
+      omp_set_dynamic(0); // get rid of dynamic stuff
+      omp_set_num_threads(16); // set the number of threads
+      hk.set_size(K,K); 
+      double start_time = omp_get_wtime();
+      hkfunc(); 
+      cout <<"hk calc time:"<< 1000 * (omp_get_wtime() - start_time)<<endl;
+      phik.set_size(K,K); 
+      start_time = omp_get_wtime();
+      phikfunc();
+      cout <<"phik calc time:"<< 1000 * (omp_get_wtime() - start_time)<<endl;
       ckpast.zeros(K,K); cktemp.zeros(K,K);
     };
     double l (const arma::vec& x,const arma::vec& u,double ti);
@@ -99,6 +108,7 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
 return J1;}
 
 template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
+  #pragma omp parallel for
   for(int m=0;m<K;m++){
     for(int n=0;n<K;n++){
       int L1ind = 100; int L2ind = 100;
@@ -113,7 +123,9 @@ template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
 
 template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to L1
   cout<<trapint(phid)<<"\n";
-   for(int n=0;n<K;n++){
+  #pragma omp parallel for 
+  for(int n=0;n<K;n++){
+    #pragma omp parallel for
     for(int m=0;m<K;m++){
       int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
@@ -127,13 +139,16 @@ template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to 
 template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   arma::vec xproj;
   arma::mat ck = arma::zeros<arma::mat>(K,K); 
-  for(int m=0;m<K;m++){ 
+  #pragma omp parallel for 
+  for(int m=0;m<K;m++){
+    #pragma omp parallel for
     for(int n=0;n<K;n++){
-      auto Fk = [&](double x1,double x2){
-        return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};
+      //auto Fk = [&](double x1,double x2){
+      //        return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};
       for(int j=0; j<x.n_cols;j++){
         xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-        ck(m,n)+=sys->dt*Fk(xproj(X1),xproj(X2)); //if(m==0&n==0)cout<<Fk(xproj(X1),xproj(X2))<<"   ";
+        ck(m,n)+=sys->dt*cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n);
+          //Fk(xproj(X1),xproj(X2)); 
       };
       ck(m,n)=ck(m,n)/(sys->tcurr+x.n_cols*sys->dt);
     };

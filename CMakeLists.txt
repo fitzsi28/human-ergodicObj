@@ -4,7 +4,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Armadillo REQUIRED)
 find_package(OpenCV REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+find_package(OpenMP REQUIRED)
+if(OPENMP_FOUND)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${OpenMP_INCLUDE_DIRS})
 
 
 #add_executable(sac_cartpend sac_cartpend.cpp)
@@ -23,11 +29,11 @@ include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 #target_link_libraries(sac_doubleint ${ARMADILLO_LIBRARIES})
 
 add_executable(ergsac_doubleint ergsac_doubleint.cpp)
-target_link_libraries(ergsac_doubleint ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(ergsac_doubleint ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
 add_executable(ergsac_dilincoln ergsac_dilincoln.cpp)
-target_link_libraries(ergsac_dilincoln ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(ergsac_dilincoln ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
-add_executable(ergsac_digauss ergsac_digauss.cpp)
-target_link_libraries(ergsac_digauss ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS})
+#add_executable(ergsac_digauss ergsac_digauss.cpp)
+#target_link_libraries(ergsac_digauss ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS})
 
