@@ -12,16 +12,16 @@ using namespace std;
 #include"rk4_int.hpp"
 
 
-double xbound = 5,ybound = 5;
+double xbound = 0.5,ybound = 0.5;
 
 double phid(double x1, double x2){
   arma::vec lbounds = {{-xbound},{-ybound}};
   arma::vec x = {{x1},{x2}};
-  arma::vec Mu= {{-2.},{1.}}; Mu=Mu-lbounds;
-  arma::vec Mu2 = {{3.},{-1.}}; Mu2 = Mu2-lbounds;
-  arma::vec Mu3 = {{3.5},{3.}}; Mu3 = Mu3-lbounds;
-  arma::mat Sig = {{0.25,0.},{0.,0.5}};
-  arma::mat Sig2 = {{0.1,0.},{0.,0.1}};
+  arma::vec Mu= {{-0.2},{0.1}}; Mu=Mu-lbounds;
+  arma::vec Mu2 = {{0.3},{-0.1}}; Mu2 = Mu2-lbounds;
+  arma::vec Mu3 = {{0.35},{0.3}}; Mu3 = Mu3-lbounds;
+  arma::mat Sig = {{0.001,0.},{0.,0.001}};
+  arma::mat Sig2 = {{0.01,0.},{0.,0.01}};
   double dist1 = 0.3*arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
   double dist2 = 0.3*arma::as_scalar(arma::expmat(-0.5*(x-Mu2).t()*Sig2.i()*(x-Mu2))/pow(pow(2*PI,2)*arma::det(Sig2),0.5));
   double dist3 = 0.4*arma::as_scalar(arma::expmat(-0.5*(x-Mu3).t()*Sig.i()*(x-Mu3))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
@@ -34,15 +34,17 @@ int main()
 {   ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat R = 0.1*arma::eye(2,2); double q=5000.;
-    arma::vec umax = {5,5};
+    arma::mat R = 0.01*arma::eye(2,2); double q=1000.;
+    arma::vec umax = {40.0,40.0};
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
  
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
-    syst1.Xcurr = {0.,0.01,0.,0.01};
+    random_device rd; mt19937 eng(rd());
+    uniform_real_distribution<> distr(-0.4,0.4);
+    syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};
     
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
        
