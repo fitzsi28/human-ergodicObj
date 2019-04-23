@@ -125,7 +125,7 @@ template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to 
   cout<<trapint(phid)<<"\n";
   #pragma omp parallel for 
   for(int n=0;n<K;n++){
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int m=0;m<K;m++){
       int L1ind = 100; int L2ind = 100;
       double d1 = 2*L1/L1ind;
@@ -139,9 +139,9 @@ template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to 
 template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   arma::vec xproj;
   arma::mat ck = arma::zeros<arma::mat>(K,K); 
-  #pragma omp parallel for 
+  //#pragma omp parallel for 
   for(int m=0;m<K;m++){
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int n=0;n<K;n++){
       //auto Fk = [&](double x1,double x2){
       //        return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};

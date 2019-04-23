@@ -13,9 +13,9 @@ using namespace std;
 
 cv::Mat image;
 double imgTotal=0.;
-double xbound = 5,ybound = 5;//2200/2;
+double xbound = 0.5,ybound = 0.5;//2200/2;
 double phid(double x1, double x2){
-  double ind1 = x2*220.; double ind2 = x1*220.;
+  double ind1 = x2*2200.; double ind2 = x1*2200.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
   double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);//cout<<totalInt<<" ";
   intensity = intensity/totalInt;//(255*7);
@@ -25,8 +25,8 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   string imageName("lincoln2.png");
-    //string imageName("gauss.png");
+{   //string imageName("lincoln2.png");
+    string imageName("gauss.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);cout<<cv::mean(image)[0]<<"\n";
     cv::flip(image,image,-1);
@@ -37,15 +37,15 @@ int main()
     ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat R = 0.1*arma::eye(2,2); double q=5000.;
-    arma::vec umax = {5,5};
+    arma::mat R = 0.01*arma::eye(2,2); double q=100.;
+    arma::vec umax = {40,40};
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
     random_device rd; mt19937 eng(rd());
-    uniform_real_distribution<> distr(-5,5);
+    uniform_real_distribution<> distr(-0.4,0.4);
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};
     cout<<syst1.Xcurr<<"\n";
     //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
