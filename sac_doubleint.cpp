@@ -5,10 +5,10 @@
 #include<armadillo>
 using namespace std;
 
-#include"doubleint.hpp"
-#include"error_cost.hpp"
-#include"SAC.hpp"
-#include"rk4_int.hpp"
+#include"SAC_MDA/doubleint.hpp"
+#include"SAC_MDA/error_cost.hpp"
+#include"SAC_MDA/SAC.hpp"
+#include"SAC_MDA/rk4_int.hpp"
 arma::vec xd(double t){
         return {{-2},{0},{-2},{0}};};
 arma::vec unom(double t){

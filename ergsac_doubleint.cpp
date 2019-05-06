@@ -6,10 +6,10 @@
 
 using namespace std;
 
-#include"doubleint.hpp"
-#include"ergodic_cost.hpp"
-#include"SAC.hpp"
-#include"rk4_int.hpp"
+#include"SAC_MDA/doubleint.hpp"
+#include"SAC_MDA/ergodic_cost.hpp"
+#include"SAC_MDA/SAC.hpp"
+#include"SAC_MDA/rk4_int.hpp"
 
 
 double xbound = 0.5,ybound = 0.5;

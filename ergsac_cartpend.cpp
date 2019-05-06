@@ -5,10 +5,10 @@
 #include<armadillo>
 using namespace std;
 
-#include"cartpend.hpp"
-#include"ergodic_cost.hpp"
-#include"SAC.hpp"
-#include"rk4_int.hpp"
+#include"SAC_MDA/cartpend.hpp"
+#include"SAC_MDA/ergodic_cost.hpp"
+#include"SAC_MDA/SAC.hpp"
+#include"SAC_MDA/rk4_int.hpp"
 
 double xbound = PI,ybound = 10.;
 double xd(double x1, double x2){

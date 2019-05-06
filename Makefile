@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/kt-fitz/human-ergodicObj
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -136,6 +136,98 @@ ergsac_doubleint/fast:
 	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
 .PHONY : ergsac_doubleint/fast
 
+#=============================================================================
+# Target rules for targets named sac_cartpend
+
+# Build rule for target.
+sac_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sac_cartpend
+.PHONY : sac_cartpend
+
+# fast build rule for target.
+sac_cartpend/fast:
+	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/build
+.PHONY : sac_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named sac_doubleint
+
+# Build rule for target.
+sac_doubleint: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sac_doubleint
+.PHONY : sac_doubleint
+
+# fast build rule for target.
+sac_doubleint/fast:
+	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/build
+.PHONY : sac_doubleint/fast
+
+#=============================================================================
+# Target rules for targets named mda_cartpend
+
+# Build rule for target.
+mda_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mda_cartpend
+.PHONY : mda_cartpend
+
+# fast build rule for target.
+mda_cartpend/fast:
+	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/build
+.PHONY : mda_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named mig_mda_cartpend
+
+# Build rule for target.
+mig_mda_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
+.PHONY : mig_mda_cartpend
+
+# fast build rule for target.
+mig_mda_cartpend/fast:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
+.PHONY : mig_mda_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named ergsac_cartpend
+
+# Build rule for target.
+ergsac_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_cartpend
+.PHONY : ergsac_cartpend
+
+# fast build rule for target.
+ergsac_cartpend/fast:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
+.PHONY : ergsac_cartpend/fast
+
+ergsac_cartpend.o: ergsac_cartpend.cpp.o
+
+.PHONY : ergsac_cartpend.o
+
+# target to build an object file
+ergsac_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.o
+.PHONY : ergsac_cartpend.cpp.o
+
+ergsac_cartpend.i: ergsac_cartpend.cpp.i
+
+.PHONY : ergsac_cartpend.i
+
+# target to preprocess a source file
+ergsac_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.i
+.PHONY : ergsac_cartpend.cpp.i
+
+ergsac_cartpend.s: ergsac_cartpend.cpp.s
+
+.PHONY : ergsac_cartpend.s
+
+# target to generate assembly for a file
+ergsac_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/ergsac_cartpend.cpp.s
+.PHONY : ergsac_cartpend.cpp.s
+
 ergsac_dilincoln.o: ergsac_dilincoln.cpp.o
 
 .PHONY : ergsac_dilincoln.o
@@ -190,22 +282,150 @@ ergsac_doubleint.cpp.s:
 	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/ergsac_doubleint.cpp.s
 .PHONY : ergsac_doubleint.cpp.s
 
+mda_cartpend.o: mda_cartpend.cpp.o
+
+.PHONY : mda_cartpend.o
+
+# target to build an object file
+mda_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.o
+.PHONY : mda_cartpend.cpp.o
+
+mda_cartpend.i: mda_cartpend.cpp.i
+
+.PHONY : mda_cartpend.i
+
+# target to preprocess a source file
+mda_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.i
+.PHONY : mda_cartpend.cpp.i
+
+mda_cartpend.s: mda_cartpend.cpp.s
+
+.PHONY : mda_cartpend.s
+
+# target to generate assembly for a file
+mda_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/mda_cartpend.dir/build.make CMakeFiles/mda_cartpend.dir/mda_cartpend.cpp.s
+.PHONY : mda_cartpend.cpp.s
+
+mig_mda_cartpend.o: mig_mda_cartpend.cpp.o
+
+.PHONY : mig_mda_cartpend.o
+
+# target to build an object file
+mig_mda_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.o
+.PHONY : mig_mda_cartpend.cpp.o
+
+mig_mda_cartpend.i: mig_mda_cartpend.cpp.i
+
+.PHONY : mig_mda_cartpend.i
+
+# target to preprocess a source file
+mig_mda_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.i
+.PHONY : mig_mda_cartpend.cpp.i
+
+mig_mda_cartpend.s: mig_mda_cartpend.cpp.s
+
+.PHONY : mig_mda_cartpend.s
+
+# target to generate assembly for a file
+mig_mda_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/mig_mda_cartpend.cpp.s
+.PHONY : mig_mda_cartpend.cpp.s
+
+sac_cartpend.o: sac_cartpend.cpp.o
+
+.PHONY : sac_cartpend.o
+
+# target to build an object file
+sac_cartpend.cpp.o:
+	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.o
+.PHONY : sac_cartpend.cpp.o
+
+sac_cartpend.i: sac_cartpend.cpp.i
+
+.PHONY : sac_cartpend.i
+
+# target to preprocess a source file
+sac_cartpend.cpp.i:
+	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.i
+.PHONY : sac_cartpend.cpp.i
+
+sac_cartpend.s: sac_cartpend.cpp.s
+
+.PHONY : sac_cartpend.s
+
+# target to generate assembly for a file
+sac_cartpend.cpp.s:
+	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/sac_cartpend.cpp.s
+.PHONY : sac_cartpend.cpp.s
+
+sac_doubleint.o: sac_doubleint.cpp.o
+
+.PHONY : sac_doubleint.o
+
+# target to build an object file
+sac_doubleint.cpp.o:
+	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.o
+.PHONY : sac_doubleint.cpp.o
+
+sac_doubleint.i: sac_doubleint.cpp.i
+
+.PHONY : sac_doubleint.i
+
+# target to preprocess a source file
+sac_doubleint.cpp.i:
+	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.i
+.PHONY : sac_doubleint.cpp.i
+
+sac_doubleint.s: sac_doubleint.cpp.s
+
+.PHONY : sac_doubleint.s
+
+# target to generate assembly for a file
+sac_doubleint.cpp.s:
+	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/sac_doubleint.cpp.s
+.PHONY : sac_doubleint.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... ergsac_dilincoln"
 	@echo "... edit_cache"
 	@echo "... ergsac_doubleint"
+	@echo "... rebuild_cache"
+	@echo "... sac_cartpend"
+	@echo "... sac_doubleint"
+	@echo "... mda_cartpend"
+	@echo "... mig_mda_cartpend"
+	@echo "... ergsac_cartpend"
+	@echo "... ergsac_cartpend.o"
+	@echo "... ergsac_cartpend.i"
+	@echo "... ergsac_cartpend.s"
 	@echo "... ergsac_dilincoln.o"
 	@echo "... ergsac_dilincoln.i"
 	@echo "... ergsac_dilincoln.s"
 	@echo "... ergsac_doubleint.o"
 	@echo "... ergsac_doubleint.i"
 	@echo "... ergsac_doubleint.s"
+	@echo "... mda_cartpend.o"
+	@echo "... mda_cartpend.i"
+	@echo "... mda_cartpend.s"
+	@echo "... mig_mda_cartpend.o"
+	@echo "... mig_mda_cartpend.i"
+	@echo "... mig_mda_cartpend.s"
+	@echo "... sac_cartpend.o"
+	@echo "... sac_cartpend.i"
+	@echo "... sac_cartpend.s"
+	@echo "... sac_doubleint.o"
+	@echo "... sac_doubleint.i"
+	@echo "... sac_doubleint.s"
 .PHONY : help
 
 
