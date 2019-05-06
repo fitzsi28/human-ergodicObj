@@ -150,6 +150,19 @@ sac_cartpend/fast:
 .PHONY : sac_cartpend/fast
 
 #=============================================================================
+# Target rules for targets named ergsac_mda
+
+# Build rule for target.
+ergsac_mda: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_mda
+.PHONY : ergsac_mda
+
+# fast build rule for target.
+ergsac_mda/fast:
+	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/build
+.PHONY : ergsac_mda/fast
+
+#=============================================================================
 # Target rules for targets named sac_doubleint
 
 # Build rule for target.
@@ -282,6 +295,33 @@ ergsac_doubleint.cpp.s:
 	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/ergsac_doubleint.cpp.s
 .PHONY : ergsac_doubleint.cpp.s
 
+ergsac_mda.o: ergsac_mda.cpp.o
+
+.PHONY : ergsac_mda.o
+
+# target to build an object file
+ergsac_mda.cpp.o:
+	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/ergsac_mda.cpp.o
+.PHONY : ergsac_mda.cpp.o
+
+ergsac_mda.i: ergsac_mda.cpp.i
+
+.PHONY : ergsac_mda.i
+
+# target to preprocess a source file
+ergsac_mda.cpp.i:
+	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/ergsac_mda.cpp.i
+.PHONY : ergsac_mda.cpp.i
+
+ergsac_mda.s: ergsac_mda.cpp.s
+
+.PHONY : ergsac_mda.s
+
+# target to generate assembly for a file
+ergsac_mda.cpp.s:
+	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/ergsac_mda.cpp.s
+.PHONY : ergsac_mda.cpp.s
+
 mda_cartpend.o: mda_cartpend.cpp.o
 
 .PHONY : mda_cartpend.o
@@ -401,6 +441,7 @@ help:
 	@echo "... ergsac_doubleint"
 	@echo "... rebuild_cache"
 	@echo "... sac_cartpend"
+	@echo "... ergsac_mda"
 	@echo "... sac_doubleint"
 	@echo "... mda_cartpend"
 	@echo "... mig_mda_cartpend"
@@ -414,6 +455,9 @@ help:
 	@echo "... ergsac_doubleint.o"
 	@echo "... ergsac_doubleint.i"
 	@echo "... ergsac_doubleint.s"
+	@echo "... ergsac_mda.o"
+	@echo "... ergsac_mda.i"
+	@echo "... ergsac_mda.s"
 	@echo "... mda_cartpend.o"
 	@echo "... mda_cartpend.i"
 	@echo "... mda_cartpend.s"

@@ -10,6 +10,7 @@ using namespace std;
 #include"SAC_MDA/ergodic_cost.hpp"
 #include"SAC_MDA/SAC.hpp"
 #include"SAC_MDA/rk4_int.hpp"
+#include"SAC_MDA/MDA.hpp"
 
 cv::Mat image;
 double imgTotal=0.;
@@ -43,13 +44,16 @@ int main()
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,ergodicost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
+    mda demon(PI/4, false);
     arma::vec xwrap;
     syst1.Ucurr = unom(0); 
     random_device rd; mt19937 eng(rd());
     uniform_real_distribution<> distr(-0.4,0.4);
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};
     cout<<syst1.Xcurr<<"\n";
-    //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
+    normal_distribution<double> user(0,40);
+    default_random_engine generator;
+    arma::vec input = {user(generator),user(generator)};
        
     myfile<<"time,x,xdot,y,ydot,ux,uy,ergcost\n";
  
@@ -63,7 +67,8 @@ int main()
     myfile<<cost.calc_cost(syst1.Xcurr,syst1.Ucurr)<<"\n";
     syst1.step();
     sacsys.SAC_calc();
-    syst1.Ucurr = sacsys.ulist.col(0); 
+    input = {user(generator),user(generator)};
+    syst1.Ucurr = demon.filter(sacsys.ulist.col(0),input);
     sacsys.unom_shift(); cost.ckmemory(syst1.Xcurr);  
     } 
       
