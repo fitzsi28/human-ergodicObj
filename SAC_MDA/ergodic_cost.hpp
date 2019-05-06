@@ -147,7 +147,7 @@ template<class system> void ergodicost<system>::phikfunc(){//integrate for 0 to 
 template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   arma::vec xproj;
   arma::mat ck = arma::zeros<arma::mat>(K,K); 
-  //#pragma omp parallel for 
+  #pragma omp parallel for 
   for(int m=0;m<K;m++){
     //#pragma omp parallel for
     for(int n=0;n<K;n++){
