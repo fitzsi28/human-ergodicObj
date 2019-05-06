@@ -30,6 +30,14 @@ class ergodicost {
       }
     }
   return total;};
+  inline double eulint(const arma::mat& x,int m, int n){
+    arma::vec xproj;
+    double total = 0.;
+    for(int j=0; j<x.n_cols;j++){
+      xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
+      total+=sys->dt*cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n); 
+    };
+    return total;};
   void hkfunc();
   void phikfunc();
   arma::mat ckfunc(const arma::mat& );
@@ -143,13 +151,7 @@ template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
   for(int m=0;m<K;m++){
     //#pragma omp parallel for
     for(int n=0;n<K;n++){
-      //auto Fk = [&](double x1,double x2){
-      //        return cos(m*PI*x1/(2*L1))*cos(n*PI*x2/(2*L2))/hk(m,n);};
-      for(int j=0; j<x.n_cols;j++){
-        xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
-        ck(m,n)+=sys->dt*cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n);
-          //Fk(xproj(X1),xproj(X2)); 
-      };
+      ck(m,n) = eulint(x,m,n);
       ck(m,n)=ck(m,n)/(sys->tcurr+x.n_cols*sys->dt);
     };
   };
