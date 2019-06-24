@@ -16,8 +16,8 @@ class migmda{
     arma::vec filter(const arma::vec& user){
         arma::vec ucurr;
         double dJdlam_int = 0.;
-        arma::mat utemp = arma::zeros(1, sacsys->T_index); utemp.col(0) = user;
-        arma::mat unom = arma::zeros(1,sacsys->T_index);
+        arma::mat utemp = arma::zeros(user.n_rows, sacsys->T_index); utemp.col(0) = user;
+        arma::mat unom = arma::zeros(user.n_rows,sacsys->T_index);
         arma::mat xsol = sacsys->xforward(utemp);
         arma::mat rhosol = sacsys->rhoback(xsol,utemp);
         for(int i = 0;i<utemp.n_cols;i++) dJdlam_int+=sacsys->dJdlam_t(xsol.col(i),rhosol.col(i),utemp.col(i),unom.col(i));
