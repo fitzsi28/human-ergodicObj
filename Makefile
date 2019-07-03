@@ -111,69 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ergsac_dilincoln
+# Target rules for targets named mig_mda_cartpend
 
 # Build rule for target.
-ergsac_dilincoln: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_dilincoln
-.PHONY : ergsac_dilincoln
+mig_mda_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
+.PHONY : mig_mda_cartpend
 
 # fast build rule for target.
-ergsac_dilincoln/fast:
-	$(MAKE) -f CMakeFiles/ergsac_dilincoln.dir/build.make CMakeFiles/ergsac_dilincoln.dir/build
-.PHONY : ergsac_dilincoln/fast
-
-#=============================================================================
-# Target rules for targets named ergsac_doubleint
-
-# Build rule for target.
-ergsac_doubleint: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
-.PHONY : ergsac_doubleint
-
-# fast build rule for target.
-ergsac_doubleint/fast:
-	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
-.PHONY : ergsac_doubleint/fast
-
-#=============================================================================
-# Target rules for targets named sac_cartpend
-
-# Build rule for target.
-sac_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sac_cartpend
-.PHONY : sac_cartpend
-
-# fast build rule for target.
-sac_cartpend/fast:
-	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/build
-.PHONY : sac_cartpend/fast
-
-#=============================================================================
-# Target rules for targets named ergsac_mda
-
-# Build rule for target.
-ergsac_mda: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_mda
-.PHONY : ergsac_mda
-
-# fast build rule for target.
-ergsac_mda/fast:
-	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/build
-.PHONY : ergsac_mda/fast
-
-#=============================================================================
-# Target rules for targets named sac_doubleint
-
-# Build rule for target.
-sac_doubleint: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sac_doubleint
-.PHONY : sac_doubleint
-
-# fast build rule for target.
-sac_doubleint/fast:
-	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/build
-.PHONY : sac_doubleint/fast
+mig_mda_cartpend/fast:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
+.PHONY : mig_mda_cartpend/fast
 
 #=============================================================================
 # Target rules for targets named mda_cartpend
@@ -189,17 +137,69 @@ mda_cartpend/fast:
 .PHONY : mda_cartpend/fast
 
 #=============================================================================
-# Target rules for targets named mig_mda_cartpend
+# Target rules for targets named sac_doubleint
 
 # Build rule for target.
-mig_mda_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
-.PHONY : mig_mda_cartpend
+sac_doubleint: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sac_doubleint
+.PHONY : sac_doubleint
 
 # fast build rule for target.
-mig_mda_cartpend/fast:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
-.PHONY : mig_mda_cartpend/fast
+sac_doubleint/fast:
+	$(MAKE) -f CMakeFiles/sac_doubleint.dir/build.make CMakeFiles/sac_doubleint.dir/build
+.PHONY : sac_doubleint/fast
+
+#=============================================================================
+# Target rules for targets named ergsac_mda
+
+# Build rule for target.
+ergsac_mda: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_mda
+.PHONY : ergsac_mda
+
+# fast build rule for target.
+ergsac_mda/fast:
+	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/build
+.PHONY : ergsac_mda/fast
+
+#=============================================================================
+# Target rules for targets named sac_cartpend
+
+# Build rule for target.
+sac_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sac_cartpend
+.PHONY : sac_cartpend
+
+# fast build rule for target.
+sac_cartpend/fast:
+	$(MAKE) -f CMakeFiles/sac_cartpend.dir/build.make CMakeFiles/sac_cartpend.dir/build
+.PHONY : sac_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named ergsac_doubleint
+
+# Build rule for target.
+ergsac_doubleint: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_doubleint
+.PHONY : ergsac_doubleint
+
+# fast build rule for target.
+ergsac_doubleint/fast:
+	$(MAKE) -f CMakeFiles/ergsac_doubleint.dir/build.make CMakeFiles/ergsac_doubleint.dir/build
+.PHONY : ergsac_doubleint/fast
+
+#=============================================================================
+# Target rules for targets named ergsac_dilincoln
+
+# Build rule for target.
+ergsac_dilincoln: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_dilincoln
+.PHONY : ergsac_dilincoln
+
+# fast build rule for target.
+ergsac_dilincoln/fast:
+	$(MAKE) -f CMakeFiles/ergsac_dilincoln.dir/build.make CMakeFiles/ergsac_dilincoln.dir/build
+.PHONY : ergsac_dilincoln/fast
 
 #=============================================================================
 # Target rules for targets named ergsac_cartpend
@@ -213,6 +213,46 @@ ergsac_cartpend: cmake_check_build_system
 ergsac_cartpend/fast:
 	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
 .PHONY : ergsac_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named edgedetect
+
+# Build rule for target.
+edgedetect: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 edgedetect
+.PHONY : edgedetect
+
+# fast build rule for target.
+edgedetect/fast:
+	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/build
+.PHONY : edgedetect/fast
+
+edgedetect.o: edgedetect.cpp.o
+
+.PHONY : edgedetect.o
+
+# target to build an object file
+edgedetect.cpp.o:
+	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/edgedetect.cpp.o
+.PHONY : edgedetect.cpp.o
+
+edgedetect.i: edgedetect.cpp.i
+
+.PHONY : edgedetect.i
+
+# target to preprocess a source file
+edgedetect.cpp.i:
+	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/edgedetect.cpp.i
+.PHONY : edgedetect.cpp.i
+
+edgedetect.s: edgedetect.cpp.s
+
+.PHONY : edgedetect.s
+
+# target to generate assembly for a file
+edgedetect.cpp.s:
+	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/edgedetect.cpp.s
+.PHONY : edgedetect.cpp.s
 
 ergsac_cartpend.o: ergsac_cartpend.cpp.o
 
@@ -436,16 +476,20 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... ergsac_dilincoln"
 	@echo "... edit_cache"
-	@echo "... ergsac_doubleint"
-	@echo "... rebuild_cache"
-	@echo "... sac_cartpend"
-	@echo "... ergsac_mda"
-	@echo "... sac_doubleint"
-	@echo "... mda_cartpend"
 	@echo "... mig_mda_cartpend"
+	@echo "... mda_cartpend"
+	@echo "... sac_doubleint"
+	@echo "... ergsac_mda"
+	@echo "... sac_cartpend"
+	@echo "... ergsac_doubleint"
+	@echo "... ergsac_dilincoln"
 	@echo "... ergsac_cartpend"
+	@echo "... rebuild_cache"
+	@echo "... edgedetect"
+	@echo "... edgedetect.o"
+	@echo "... edgedetect.i"
+	@echo "... edgedetect.s"
 	@echo "... ergsac_cartpend.o"
 	@echo "... ergsac_cartpend.i"
 	@echo "... ergsac_cartpend.s"

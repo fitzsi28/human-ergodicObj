@@ -37,6 +37,5 @@ target_link_libraries(ergsac_dilincoln ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${O
 add_executable(ergsac_mda ergsac_mda.cpp)
 target_link_libraries(ergsac_mda ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
-#add_executable(ergsac_digauss ergsac_digauss.cpp)
-#target_link_libraries(ergsac_digauss ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS})
-
+add_executable(edgedetect edgedetect.cpp)
+target_link_libraries(edgedetect ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
