@@ -10,32 +10,33 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
+set(EXECUTABLE_OUTPUT_PATH build/)
 include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${OpenMP_INCLUDE_DIRS})
 
 
-#add_executable(sac_cartpend sac_cartpend.cpp)
-#target_link_libraries(sac_cartpend ${ARMADILLO_LIBRARIES})
+add_executable(sac_cartpend sac_cartpend.cpp)
+target_link_libraries(sac_cartpend ${ARMADILLO_LIBRARIES})
 
-#add_executable(mda_cartpend mda_cartpend.cpp)
-#target_link_libraries(mda_cartpend ${ARMADILLO_LIBRARIES})
+add_executable(mda_cartpend mda_cartpend.cpp)
+target_link_libraries(mda_cartpend ${ARMADILLO_LIBRARIES})
 
-#add_executable(mig_mda_cartpend mig_mda_cartpend.cpp)
-#target_link_libraries(mig_mda_cartpend ${ARMADILLO_LIBRARIES})
+add_executable(mig_mda_cartpend mig_mda_cartpend.cpp)
+target_link_libraries(mig_mda_cartpend ${ARMADILLO_LIBRARIES})
 
-#add_executable(ergsac_cartpend ergsac_cartpend.cpp)
-#target_link_libraries(ergsac_cartpend ${ARMADILLO_LIBRARIES})
+add_executable(ergsac_cartpend ergsac_cartpend.cpp)
+target_link_libraries(ergsac_cartpend ${ARMADILLO_LIBRARIES})
 
-#add_executable(sac_doubleint sac_doubleint.cpp)
-#target_link_libraries(sac_doubleint ${ARMADILLO_LIBRARIES})
+add_executable(sac_doubleint sac_doubleint.cpp)
+target_link_libraries(sac_doubleint ${ARMADILLO_LIBRARIES})
 
-#add_executable(ergsac_doubleint ergsac_doubleint.cpp)
-#target_link_libraries(ergsac_doubleint ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
+add_executable(ergsac_doubleint ergsac_doubleint.cpp)
+target_link_libraries(ergsac_doubleint ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
-#add_executable(ergsac_dilincoln ergsac_dilincoln.cpp)
-#target_link_libraries(ergsac_dilincoln ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
+add_executable(ergsac_dilincoln ergsac_dilincoln.cpp)
+target_link_libraries(ergsac_dilincoln ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
-#add_executable(ergsac_mda ergsac_mda.cpp)
-#target_link_libraries(ergsac_mda ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
+add_executable(ergsac_mda ergsac_mda.cpp)
+target_link_libraries(ergsac_mda ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
 
 add_executable(edgedetect edgedetect.cpp)
 target_link_libraries(edgedetect ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})

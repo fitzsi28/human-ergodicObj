@@ -1,3 +1,4 @@
+*.png
 *.csv
 #MAKEfiles
 CMakeFiles/*
@@ -36,4 +37,4 @@ CMakeCache.txt
 *.exe
 *.out
 *.app
-
+build/*
