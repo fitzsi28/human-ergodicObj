@@ -4,9 +4,11 @@
 #include<math.h>
 #include<armadillo>
 #include <opencv2/opencv.hpp>//namespace cv
+
+#include"Virtual_Fixt/imagewalls.hpp"
 using namespace std;
 const int SEARCHRAD = 100;
-const int THRESHOLD = 130;
+//const int THRESHOLD = 130;
 
 double euclidist (int x, int y, int xt, int yt){
   double d= sqrt(pow(x-xt,2.)+pow(y-yt,2.));
@@ -56,7 +58,7 @@ int main()
       };
       xnear = pixels(dist.index_min(),0);
       ynear = pixels(dist.index_min(),1);
-      distnear = euclidist(x,y,xnear,ynear);
+      distnear = dist(0);//euclidist(x,y,xnear,ynear);
       j++;    
     };
     if(found==false){}//imagetemp.at<uchar>(y,x)=0;}
