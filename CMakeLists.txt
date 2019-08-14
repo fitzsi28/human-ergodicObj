@@ -12,6 +12,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}
 endif()
 include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${OpenMP_INCLUDE_DIRS})
 
+set(EXECUTABLE_OUTPUT_PATH build/)
 
 add_executable(sac_cartpend sac_cartpend.cpp)
 target_link_libraries(sac_cartpend ${ARMADILLO_LIBRARIES})

@@ -1,17 +1,15 @@
-#ifndef ERGODICCOST_HPP
-#define ERGODICCOST_HPP
+#ifndef DKLCOST_HPP
+#define DKLCOST_HPP
 #include<armadillo>
 #include<math.h>
-#include<omp.h>
+//#include<omp.h>
 
 template <class system>
-class ergodicost {
+class dklcost {
   system* sys;
   double L1,L2,T;
   int X1,X2;//index of relavant dimensions in xvector
-  
-  arma::mat cktemp;
-  int K;
+  int K;//number of samples in the search domain
   inline double trapint(std::function<double(double,double)> f){
     double total = 0.,x0,y0,xf,yf;
     //x0=-L1,y0=-L2,xf=L1,yf=L2;
@@ -30,6 +28,7 @@ class ergodicost {
       }
     }
   return total;};
+  /*
   inline double eulint(const arma::mat& x,int m, int n){
     arma::vec xproj;
     double total = 0.;
@@ -37,48 +36,35 @@ class ergodicost {
       xproj = sys->proj_func(x.col(j)); xproj(X1) = xproj(X1)+L1; xproj(X2) = xproj(X2)+L2;
       total+=sys->dt*cos(m*PI*xproj(X1)/(2*L1))*cos(n*PI*xproj(X2)/(2*L2))/hk(m,n); 
     };
-    return total;};
-  void hkfunc();
-  void phikfunc();
-  arma::mat ckfunc(const arma::mat& );
-  
+    return total;};*/
+    
   public:
-    arma::mat hk;
-    arma::mat phik;
-    arma::mat ckpast;
+    arma::mat xpast;
+    arma::mat domainsamps;
     double Q;
     arma::mat R;
     std::function<double(double,double)> phid;
-    ergodicost(double _Q, arma::mat _R,int _K, int _X1,int _X2,std::function<double(double,double)> _phid,double _L1,double _L2,
+    dklcost(double _Q, arma::mat _R,int _K, int _X1,int _X2,std::function<double(double,double)> _phid,double _L1,double _L2,
         double _T,system *_sys){
       Q=_Q; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2;
-      omp_set_dynamic(0); // get rid of dynamic stuff
-      omp_set_num_threads(16); // set the number of threads
-      hk.set_size(K,K); 
-      double start_time = omp_get_wtime();
-      hkfunc(); 
-      cout <<"hk calc time:"<< 1000 * (omp_get_wtime() - start_time)<<endl;
-      phik.set_size(K,K); 
-      start_time = omp_get_wtime();
-      phikfunc();
-      cout <<"phik calc time:"<< 1000 * (omp_get_wtime() - start_time)<<endl;
-      ckpast.zeros(K,K); cktemp.zeros(K,K);
+      //Choose K samples over the domain [[0,2*L1],[0,2*L2]]
+      
     };
     double l (const arma::vec& x,const arma::vec& u,double ti);
     arma::vec dldx (const arma::vec&x, const arma::vec& u, double ti);
     double calc_cost (const arma::mat& x,const arma::mat& u);
-    void ckmemory (const arma::vec&);
+    void xmemory (const arma::vec&);
 };/////////end main class def
 
-template<class system> double ergodicost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
+template<class system> double dklcost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
       arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
       Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
       Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
       return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
       }
-template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
+template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
@@ -99,7 +85,7 @@ template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, co
   };
 return a;}
 
-template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
+template<class system> double dklcost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
   
   double J1 = 0.; double LamK;
   cktemp = (ckpast*sys->tcurr/(sys->tcurr+T))+ckfunc(x);
@@ -115,17 +101,12 @@ template<class system> double ergodicost<system>::calc_cost (const arma::mat& x,
   };//cout<<"total cost "<<J1<<"\n";
 return J1;}
 
-template<class system> void ergodicost<system>::hkfunc(){//integrate 0 to L
-  #pragma omp parallel for
-  for(int m=0;m<K;m++){
-    for(int n=0;n<K;n++){
-      int L1ind = 100; int L2ind = 100;
-      double d1 = 2*L1/L1ind;
-      double d2 = 2*L2/L2ind;
-      auto fk = [&](double x1,double x2){
-        return pow(cos(m*PI*(x1)/(2*L1)),2.)*pow(cos(n*PI*(x2)/(2*L2)),2.);};
-      hk(m,n)=pow(trapint(fk),0.5);      
-    };
+template<class system> double dklcost<system>::gpast(const arma::mat& s){//g(s) defined for 0 to tcurr
+  double total = 0.;
+  int t_index = round(sys->tcurr/sys->dt);
+  for(int i = 0;i<t_index;i++{
+    arma::vec si = s-sys->proj_func(xpast.col(i));
+    total+=sys->dt*exp(-0.5*arma::as_scalar(si.t()*sigma.i()*si));
   };
 }
 
@@ -156,7 +137,7 @@ template<class system> arma::mat ergodicost<system>::ckfunc(const arma::mat& x){
     };
   };
 return ck;}
-template<class system> void ergodicost<system>::ckmemory(const arma::vec& x){
+template<class system> void dklcost<system>::xmemory(const arma::vec& x){
   ckpast=(ckpast*sys->tcurr/(sys->tcurr+sys->dt))+ckfunc(x);//cout<<ckfunc(x)<<"\n";
 }
 #endif

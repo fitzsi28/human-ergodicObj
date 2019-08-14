@@ -26,8 +26,8 @@ arma::vec unom(double t){
 
 int main()
 {   //string imageName("lincoln2.png");
-    //string imageName("gauss.png");
-    string imageName("apple.png");
+    string imageName("gauss.png");
+    //string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);cout<<cv::mean(image)[0]<<"\n";
     cv::flip(image,image,-1);
@@ -38,7 +38,7 @@ int main()
     ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat R = 0.01*arma::eye(2,2); double q=1000.;
+    arma::mat R = 0.01*arma::eye(2,2); double q=2000.;
     arma::vec umax = {40,40};
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);

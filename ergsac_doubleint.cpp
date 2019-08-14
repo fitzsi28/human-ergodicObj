@@ -34,7 +34,7 @@ int main()
 {   ofstream myfile;
     myfile.open ("DIergtest.csv");
     DoubleInt syst1 (1./60.);
-    arma::mat R = 0.01*arma::eye(2,2); double q=1500.;
+    arma::mat R = 0.01*arma::eye(2,2); double q=500.;
     arma::vec umax = {40.0,40.0};
     double T = 1.0;
     ergodicost<DoubleInt> cost (q,R,10,0,2,phid,xbound,ybound,T,&syst1);
