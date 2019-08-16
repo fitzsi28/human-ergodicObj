@@ -92,7 +92,7 @@ template<class system> arma::vec ergodicost<system>::dldx (const arma::vec&x, co
       LamK = pow(1+(pow(k1,2)+pow(k2,2)),-1.5);
       Dx1F = arma::as_scalar((-k1*PI/(2*L1*hk(k1,k2)))*sin(k1*PI*xproj(X1)/(2*L1))*cos(k2*PI*xproj(X2)/(2*L2)));
       Dx2F = arma::as_scalar((-k2*PI/(2*L2*hk(k1,k2)))*cos(k1*PI*xproj(X1)/(2*L1))*sin(k2*PI*xproj(X2)/(2*L2)));
-      a(X1)+=Q*LamK*(cktemp(k1,k2)-phik(k1,k2))/T*Dx1F;
+      a(X1)+=Q*LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*Dx1F;
       a(X2)+=Q*LamK*2.*(cktemp(k1,k2)-phik(k1,k2))/T*Dx2F;
 
     };
