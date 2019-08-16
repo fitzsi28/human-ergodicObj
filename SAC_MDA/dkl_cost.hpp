@@ -27,7 +27,7 @@ class dklcost {
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2; X_DKL<<X1<<X2; sigma=_sigma;
       T_index = T/sys->dt;
       xfuture=arma::zeros<arma::mat>(sys->Xcurr.n_rows,T_index);
-      xpast=arma::zeros<arma::mat>(sys->Xcurr.n_rows,300/sys->dt);//initialize xpast to hold up to fiveminutes of data
+      xpast.set_size(sys->Xcurr.n_rows,300/sys->dt);//initialize xpast to hold up to fiveminutes of data
       domainsamps.set_size(2,K);
       qs_i.zeros(K);ps_i.set_size(K);
       resample(); //initiliaze the uniform samples over the domain and the probability of each sample
@@ -93,7 +93,7 @@ template<class system> void dklcost<system>::qs_disc(const arma::mat& x){
   for(int n=0;n<qs_i.n_rows;n++){
     qs_i(n) = 0.;
     for(int j=0;j<x.n_cols;j++){
-      arma::vec sj = domainsamps(n)-sys->proj_func(x.col(j));
+      arma::vec sj = domainsamps.col(n)-sys->proj_func(x.col(j)).elem(X_DKL);
       qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sigma.i()*sj));
     };
   };
