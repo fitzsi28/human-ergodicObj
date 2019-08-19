@@ -3,17 +3,18 @@ import scipy.integrate as scint
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 from matplotlib import colors
+from scipy.stats import multivariate_normal
 
 
-L1 = 2*np.pi
-L2 =20.0
+L1 = 1.
+L2 =1.
 Sigma = np.eye(2)
 
-data=genfromtxt('/home/kt-fitz/human-ergodicObj/CPergtest.csv',delimiter=",",dtype=float)
+data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIdkltest.csv',delimiter=",",dtype=float)
 data = np.delete(data,0,0)
 tlist = data[0:-1,0]
-x1 = data[0:-1,1]+(L1/2.)
-x2 = data[0:-1,2]+(L2/2.)
+x1 = data[0:-1,1]#+(L1/2.)
+x2 = data[0:-1,3]#+(L2/2.)
 X = np.stack([x1,x2],axis=1)
 
 
@@ -44,3 +45,24 @@ def eta_calc(f):
         for n in range(1,N1):
             total+=d1*d2*f([x0+m*d1,y0+n*d2]) 
     return 1/total
+
+plt.figure()
+plt.plot(tlist,x1)
+plt.plot(tlist,x2)
+
+NBINS = 300
+xj, yj = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
+domain = np.transpose(np.vstack([np.linspace(-L1/2,L1/2,NBINS),np.linspace(-L2/2,L2/2,NBINS)]))
+ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0.001,0.0],[0.0,0.001]])\
++0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.3,-0.1], cov=[[0.01,0.0],[0.0,0.01]])\
++0.4*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.35,0.3], cov=[[0.001,0.0],[0.0,0.001]])
+plt.figure()
+plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=1.0))
+plt.plot(x1,x2,'k')
+#plt.plot(tlist,data[0:-1,5])
+#plt.plot(tlist,data[0:-1,6])
+
+plt.figure()
+plt.plot(tlist,data[0:-1,7])
+
+plt.show()

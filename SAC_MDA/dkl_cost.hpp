@@ -49,7 +49,7 @@ class dklcost {
       }*/
 template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const arma::vec& u, double ti){
   arma::vec xproj = sys->proj_func(x);
-  arma::vec a,atemp; a.zeros(xproj.n_rows);atemp.zeros(2);
+  arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
   Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
   Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
@@ -59,7 +59,7 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   //arma::vec x_dkl = {xproj(X1),xproj(X2)};
   for(int n=0;n<ps_i.n_rows;n++){
     arma::vec s_x = domainsamps(n)-x.elem(X_DKL);//x_dkl;
-    a.elem(X_DKL)+=arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sigma.i()*s_x))*s_x.t()*sigma.i();
+    a.elem(X_DKL)-=arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sigma.i()*s_x))*s_x.t()*sigma.i();
   };
   //a(X1) = a(X1)+atemp(0); a(X2)=a(X2)+atemp(1);
 return a;}
@@ -77,18 +77,7 @@ template<class system> double dklcost<system>::calc_cost (const arma::mat& x,con
     J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt); 
   };//cout<<"total cost "<<J1<<"\n";*/
 return J1;}
-/*
-template<class system> double dklcost<system>::g(const arma::vec& s){//g(s) defined for 0 to tcurr
-  double total = 0.;
-  for(int i = 0;i<t_now;i++{
-    arma::vec si = s-sys->proj_func(xpast.col(i));
-    total+=sys->dt*exp(-0.5*arma::as_scalar(si.t()*sigma.i()*si));
-  for(int j = 0;j<xfuture.n_cols;j++{
-    arma::vec sj = s-sys->proj_func(xpast.col(j));
-    total+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sigma.i()*sj));
-  };
-  return total;
-}*/
+
 template<class system> void dklcost<system>::qs_disc(const arma::mat& x){
   for(int n=0;n<qs_i.n_rows;n++){
     qs_i(n) = 0.;
@@ -114,5 +103,6 @@ template<class system> void dklcost<system>::resample(){
 template<class system> void dklcost<system>::xmemory(const arma::vec& x){
   xpast.col(t_now)= x;
   t_now++;
+  //resample();
 }
 #endif
