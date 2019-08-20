@@ -36,29 +36,26 @@ int main()
     DoubleInt syst1 (1./60.);
     syst1.Ucurr = unom(0); 
     random_device rd; mt19937 eng(rd());
-    uniform_real_distribution<> distr(-0.3,0.3);
+    uniform_real_distribution<> distr(-0.4,0.4);
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};//must be initialized before instantiating cost
-    arma::mat R = 0.01*arma::eye(2,2); double q=1.;//500.;
+    arma::mat R = 0.01*arma::eye(2,2); double q=1.;
     arma::vec umax = {40.0,40.0};
-    double T = 1.0;
-    arma::mat SIGMA = 0.1*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,200,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    double T = 0.5;
+    arma::mat SIGMA = 0.01*arma::eye(2,2);
+    dklcost<DoubleInt> cost (q,R,50,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
  
     arma::vec xwrap;
-    
-    
-    //arma::mat unom = arma::zeros<arma::mat>(1,sacsys.T_index);
-       
+           
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<10.0){
+    while (syst1.tcurr<30.0){
     cost.xmemory(syst1.Xcurr);
-    if(fmod(syst1.tcurr,2)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n";
+    if(fmod(syst1.tcurr,2)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n"<<syst1.Xcurr;
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 
-    myfile<<xwrap(0)<<","<<xwrap(1)<<",";//myfile<<syst1.Xcurr(0)<<","<<syst1.Xcurr(1)<<",";
-    myfile<<xwrap(2)<<","<<xwrap(3)<<",";//myfile<<syst1.Xcurr(2)<<","<<syst1.Xcurr(3)<<",";
+    myfile<<xwrap(0)<<","<<xwrap(1)<<",";
+    myfile<<xwrap(2)<<","<<xwrap(3)<<",";
     myfile<<syst1.Ucurr(0)<<","<<syst1.Ucurr(1)<<",";
     myfile<<cost.calc_cost(syst1.Xcurr,syst1.Ucurr);
     myfile<<"\n";
