@@ -77,16 +77,16 @@ void sac<system,objective>::SAC_calc(){
   rhosol = rhoback(xsol, ulist);
   dJmin = 0.;//gamma*J1init
   alphad = gamma*J1init;
-  //arma::mat Lam;
+  arma::mat Lam;
   double dJdlam;
   for(int i = 0; i<T_index;i++){
-    //Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
-    //usched.col(i) = (Lam +cost->R).i()*(Lam*ulist.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
-    usched.col(i) = (cost->R).i()*-sys->hx(xsol.col(i)).t()*rhosol.col(i)+ulist.col(i);
+    Lam = sys->hx(xsol.col(i)).t()*rhosol.col(i)*rhosol.col(i).t()*sys->hx(xsol.col(i));
+    usched.col(i) = (Lam +cost->R).i()*(Lam*ulist.col(i) + sys->hx(xsol.col(i)).t()*rhosol.col(i)*alphad);
+    //usched.col(i) = -(cost->R).i()*sys->hx(xsol.col(i)).t()*rhosol.col(i)+ulist.col(i);
     dJdlam = dJdlam_t(xsol.col(i),rhosol.col(i),usched.col(i),ulist.col(i));
     Jtau.col(i) =arma::norm(usched.col(i))+dJdlam+pow((double)i*sys->dt,beta);
     }
-  tautemp = Jtau.index_min(); //cout<<Jtau;
+  tautemp = Jtau.index_min(); 
   ustar=saturation(usched.col(tautemp));//ustar.u=usched.col(0);
   int k = 0; J1new = 1000*J1init;
   while(J1new-J1init>dJmin && k<= kmax){

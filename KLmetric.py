@@ -16,9 +16,9 @@ axis_font = {'fontname':'Liberation Sans', 'size':'18'}#'21'}
 
 xj, yj = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
 domain = np.transpose(np.vstack([np.linspace(-L1/2,L1/2,NBINS),np.linspace(-L2/2,L2/2,NBINS)]))
-ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0.001,0.0],[0.0,0.001]])\
-+0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.3,-0.1], cov=[[0.01,0.0],[0.0,0.01]])\
-+0.4*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.35,0.3], cov=[[0.001,0.0],[0.0,0.001]])
+ref = 0.5*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0.001,0.0],[0.0,0.001]])\
++0.5*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.3,-0.1], cov=[[0.01,0.0],[0.0,0.01]])#\
+#+0.4*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.35,0.3], cov=[[0.001,0.0],[0.0,0.001]])
 
 
 data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIdkltest.csv',delimiter=",",dtype=float)
@@ -28,14 +28,19 @@ x1 = data[0:-1,1]#+(L1/2.)
 x2 = data[0:-1,3]#+(L2/2.)
 X = np.stack([x1,x2],axis=1)
 
+samps=genfromtxt('/home/kt-fitz/human-ergodicObj/Domain_samples.csv',delimiter=",",dtype=float)
+
 Nt = np.shape(X)[0]
 x_approx=1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[0],x2[0]], cov=[[Sigma,0.0],[0.0,Sigma]])
 for i in range(1,Nt):
     x_approx = x_approx +1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[i],x2[i]], cov=[[Sigma,0.0],[0.0,Sigma]])
 
 plt.figure()
-plt.plot(tlist,data[0:-1,5])
-plt.plot(tlist,data[0:-1,6])
+#plt.plot(tlist,data[0:-1,5])
+#plt.plot(tlist,data[0:-1,6])
+plt.plot(samps[0],samps[1],'k.')
+plt.ylim(-0.5,0.5)
+plt.xlim(-0.5,0.5)
 
 
 plt.figure()

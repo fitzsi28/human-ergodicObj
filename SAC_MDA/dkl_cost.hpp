@@ -59,7 +59,7 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   a=a+5*Qtemp*xproj;
   for(int n=0;n<ps_i.n_rows;n++){
     arma::vec s_x = domainsamps(n)-xproj.elem(X_DKL);
-    a.elem(X_DKL)-=arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sig_inv*s_x))*s_x.t()*sig_inv;
+    a.elem(X_DKL)-= arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sig_inv*s_x))*s_x.t()*sig_inv;
   };
   return a;}
 
@@ -67,7 +67,7 @@ template<class system> double dklcost<system>::calc_cost (const arma::mat& x,con
   double J1 = 0.; 
   arma::mat xjoined = arma::join_rows(xpast.cols(0,t_now),x);
   qs_disc(xjoined);
-  J1 = arma::accu(ps_i%log(ps_i)-ps_i%log(qs_i));
+  J1 = -arma::as_scalar(arma::sum(ps_i%log(qs_i)));//arma::sum(ps_i%(log(ps_i)-log(qs_i)));
   J1 = Q*J1;
   for (int i = 0; i<x.n_cols; i++){
     arma::vec xproj = sys->proj_func(x.col(i));
@@ -84,24 +84,24 @@ template<class system> void dklcost<system>::qs_disc(const arma::mat& x){
       qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sig_inv*sj));
     };
   };
-  qs_i=normalise(qs_i,1);//normalise the discrete pdf over the samples
+  qs_i=arma::normalise(qs_i,1);//normalise the discrete pdf over the samples
 }
       
 template<class system> void dklcost<system>::resample(){
   //Choose K samples over the domain [[-L1,L1],[-L2,L2]]
-  arma::vec domainsize = {2*L1,2*L2};
+  arma::vec domainsize = {2.*L1,2.*L2};//{2*L1,2*L2};
   domainsamps=arma::diagmat(domainsize)*arma::randu<arma::mat>(2,K);//generate uniform random samples from 0 to 2*L
   domainsamps.each_col() -= (0.5*domainsize);//shift samples to go from -L to L
   #pragma omp parallel for
   for(int n=0;n<ps_i.n_rows;n++){
     ps_i(n) = phid(domainsamps.col(n));
   };
-  ps_i=normalise(ps_i,1);//normalise the discrete pdf over the samples
+  ps_i=arma::normalise(ps_i,1);//normalise the discrete pdf over the samples
 }
 
 template<class system> void dklcost<system>::xmemory(const arma::vec& x){
   xpast.col(t_now)= x;
   t_now++;
-  resample();
+  //resample();
 }
 #endif
