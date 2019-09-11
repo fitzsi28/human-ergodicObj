@@ -11,7 +11,7 @@ class dklcost {
   int X1,X2;//index of relavant dimensions in xvector
   arma::uvec X_DKL;
   int K;//number of samples in the search domain
-  arma::mat sigma,sig_inv; 
+  arma::mat sigma; 
       
   public:
     arma::mat xpast;
@@ -25,7 +25,6 @@ class dklcost {
         double _T,system *_sys){
       Q=_Q; R=_R; sys=_sys; K = _K; phid = _phid; T=_T; // initialize with Q, R, sys, phid, and the domain
       X1 = _X1; X2=_X2; L1 = _L1; L2 = _L2; X_DKL<<X1<<X2; sigma=_sigma;
-      sig_inv = arma::inv(diagmat(sigma)); 
       T_index = T/sys->dt;
       omp_set_dynamic(0); // get rid of dynamic stuff
       omp_set_num_threads(16); // set the number of threads
@@ -57,22 +56,23 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
   Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
   a=a+5*Qtemp*xproj;
+  double a1 = 0.,a2=0.;
   for(int n=0;n<ps_i.n_rows;n++){
-    arma::vec s_x = domainsamps(n)-xproj.elem(X_DKL);
-    a.elem(X_DKL)-= arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sig_inv*s_x))*s_x.t()*sig_inv;
+    arma::vec s_x = domainsamps.col(n)-xproj.elem(X_DKL);
+    a.elem(X_DKL)-= arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sigma.i()*s_x))*sigma.i()*s_x;
   };
   return a;}
 
 template<class system> double dklcost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
-  double J1 = 0.; 
+  double J1 = 0.,Jtemp; 
   arma::mat xjoined = arma::join_rows(xpast.cols(0,t_now),x);
   qs_disc(xjoined);
-  J1 = -arma::as_scalar(arma::sum(ps_i%log(qs_i)));//arma::sum(ps_i%(log(ps_i)-log(qs_i)));
-  J1 = Q*J1;
+  J1 = -arma::as_scalar(arma::sum(ps_i%arma::log(qs_i)));//arma::sum(ps_i%(log(ps_i)-log(qs_i)));
+  J1 = Q*J1;//Jtemp = J1; cout<<"ergodic cost "<<J1;
   for (int i = 0; i<x.n_cols; i++){
     arma::vec xproj = sys->proj_func(x.col(i));
     J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt); 
-  };
+  };//cout<<" total cost "<<J1-Jtemp<<"\n";
 return J1;}
 
 template<class system> void dklcost<system>::qs_disc(const arma::mat& x){
@@ -81,7 +81,7 @@ template<class system> void dklcost<system>::qs_disc(const arma::mat& x){
     qs_i(n) = 0.;
     for(int j=0;j<x.n_cols;j++){
       arma::vec sj = domainsamps.col(n)-sys->proj_func(x.col(j)).elem(X_DKL);
-      qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sig_inv*sj));
+      qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sigma.i()*sj));
     };
   };
   qs_i=arma::normalise(qs_i,1);//normalise the discrete pdf over the samples
@@ -102,6 +102,6 @@ template<class system> void dklcost<system>::resample(){
 template<class system> void dklcost<system>::xmemory(const arma::vec& x){
   xpast.col(t_now)= x;
   t_now++;
-  //resample();
+  resample();
 }
 #endif
