@@ -15,6 +15,7 @@ title_font = {'fontname':'Liberation Sans', 'size':'20', 'color':'black', 'weigh
 axis_font = {'fontname':'Liberation Sans', 'size':'18'}#'21'}
 
 xj, yj = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
+xi, yi = np.mgrid[-0.6:0.6:NBINS*1j, -0.6:0.6:NBINS*1j]
 domain = np.transpose(np.vstack([np.linspace(-L1/2,L1/2,NBINS),np.linspace(-L2/2,L2/2,NBINS)]))
 ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0.001,0.0],[0.0,0.001]]) \
 +0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.3,-0.1], cov=[[0.01,0.0],[0.0,0.01]]) \
@@ -31,16 +32,16 @@ X = np.stack([x1,x2],axis=1)
 samps=genfromtxt('/home/kt-fitz/human-ergodicObj/Domain_samples.csv',delimiter=",",dtype=float)
 
 Nt = np.shape(X)[0]
-x_approx=1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[0],x2[0]], cov=[[Sigma,0.0],[0.0,Sigma]])
+x_approx=1./Nt*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [x1[0],x2[0]], cov=[[Sigma,0.0],[0.0,Sigma]])
 for i in range(1,Nt):
-    x_approx = x_approx +1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[i],x2[i]], cov=[[Sigma,0.0],[0.0,Sigma]])
+    x_approx = x_approx +1./Nt*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [x1[i],x2[i]], cov=[[Sigma,0.0],[0.0,Sigma]])
 
 plt.figure()
-plt.plot(tlist,data[0:-1,5])
-plt.plot(tlist,data[0:-1,6])
-#plt.plot(samps[0],samps[1],'k.')
-#plt.ylim(-0.5,0.5)
-#plt.xlim(-0.5,0.5)
+#plt.plot(tlist,data[0:-1,5])
+#plt.plot(tlist,data[0:-1,6])
+plt.plot(samps[0],samps[1],'k.')
+plt.ylim(-0.5,0.5)
+plt.xlim(-0.5,0.5)
 
 
 plt.figure()
@@ -55,7 +56,7 @@ cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
 
 plt.figure()
-plt.pcolormesh(xj, yj, x_approx.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
+plt.pcolormesh(xi, yi, x_approx.reshape(xi.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
 plt.plot(x1,x2,'k')
 plt.title("Gaussian Approximation of X(t)", **title_font)
 plt.xlabel ( r"$x$",**axis_font)

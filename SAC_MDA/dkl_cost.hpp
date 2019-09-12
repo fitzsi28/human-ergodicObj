@@ -44,8 +44,8 @@ class dklcost {
 template<class system> double dklcost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
       arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-      Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.2*L1)),8);
-      Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.2*L2)),8);
+      Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
+      Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
       return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
 }
 
@@ -53,8 +53,8 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-  Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.2*L1)),8);
-  Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.2*L2)),8);
+  Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
+  Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
   a=a+5*Qtemp*xproj;
   for(int n=0;n<ps_i.n_rows;n++){
     arma::vec s_x = domainsamps.col(n)-xproj.elem(X_DKL);

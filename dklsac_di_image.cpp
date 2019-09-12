@@ -25,11 +25,11 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   //string imageName("lincoln2.png");
-    string imageName("gauss.png");
+{   string imageName("lincoln2.png");
+    //string imageName("gauss.png");
     //string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-    image = (cv::Scalar::all(255)-imagetemp);cout<<cv::mean(image)[0]<<"\n";
+    image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,-1);
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
@@ -40,8 +40,8 @@ int main()
     //syst1.Xcurr = {-0.2,0.0,0.1,0.0};
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};//must be initialized before instantiating cost
     arma::mat R = 0.0001*arma::eye(2,2); double q=1.;
-    arma::vec umax = {40.0,40.0};
-    double T = 0.1;
+    arma::vec umax = {10.0,10.0};
+    double T = 0.6;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
     dklcost<DoubleInt> cost (q,R,100,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
@@ -50,7 +50,7 @@ int main()
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<30.0){
+    while (syst1.tcurr<20.0){
     //double start_time = omp_get_wtime();
     cost.xmemory(syst1.Xcurr);
     //cout <<"resamp time: "<< 1000 * (omp_get_wtime() - start_time)<<endl;
