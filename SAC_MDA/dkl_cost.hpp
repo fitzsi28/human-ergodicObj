@@ -44,8 +44,8 @@ class dklcost {
 template<class system> double dklcost<system>::l (const arma::vec& x,const arma::vec& u,double ti){
       arma::vec xproj = sys->proj_func(x);
       arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-      Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
-      Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
+      Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.2*L1)),8);
+      Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.2*L2)),8);
       return arma::as_scalar((xproj.t()*Qtemp*xproj+u.t()*R*u)/2);
 }
 
@@ -53,10 +53,9 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   arma::vec xproj = sys->proj_func(x);
   arma::vec a; a.zeros(xproj.n_rows);
   arma::mat Qtemp = arma::zeros<arma::mat>(xproj.n_rows,xproj.n_rows);
-  Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.1*L1)),8);
-  Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.1*L2)),8);
+  Qtemp(X1,X1)= pow(xproj(X1)/(L1+(0.2*L1)),8);
+  Qtemp(X2,X2) = pow(xproj(X2)/(L2+(0.2*L2)),8);
   a=a+5*Qtemp*xproj;
-  double a1 = 0.,a2=0.;
   for(int n=0;n<ps_i.n_rows;n++){
     arma::vec s_x = domainsamps.col(n)-xproj.elem(X_DKL);
     a.elem(X_DKL)-= arma::as_scalar(ps_i(n)/qs_i(n))*exp(-0.5*arma::as_scalar(s_x.t()*sigma.i()*s_x))*sigma.i()*s_x;
@@ -67,12 +66,12 @@ template<class system> double dklcost<system>::calc_cost (const arma::mat& x,con
   double J1 = 0.,Jtemp; 
   arma::mat xjoined = arma::join_rows(xpast.cols(0,t_now),x);
   qs_disc(xjoined);
-  J1 = -arma::as_scalar(arma::sum(ps_i%arma::log(qs_i)));//arma::sum(ps_i%(log(ps_i)-log(qs_i)));
-  J1 = Q*J1;//Jtemp = J1; cout<<"ergodic cost "<<J1;
+  J1 = -arma::as_scalar(arma::sum(ps_i%arma::log(qs_i)));
+  J1 = Q*J1;
   for (int i = 0; i<x.n_cols; i++){
     arma::vec xproj = sys->proj_func(x.col(i));
     J1+=l(xproj,u.col(i),sys->tcurr+(double)i*sys->dt); 
-  };//cout<<" total cost "<<J1-Jtemp<<"\n";
+  };
 return J1;}
 
 template<class system> void dklcost<system>::qs_disc(const arma::mat& x){

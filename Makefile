@@ -111,17 +111,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named mig_mda_cartpend
+# Target rules for targets named edgedetect
 
 # Build rule for target.
-mig_mda_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
-.PHONY : mig_mda_cartpend
+edgedetect: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 edgedetect
+.PHONY : edgedetect
 
 # fast build rule for target.
-mig_mda_cartpend/fast:
-	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
-.PHONY : mig_mda_cartpend/fast
+edgedetect/fast:
+	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/build
+.PHONY : edgedetect/fast
+
+#=============================================================================
+# Target rules for targets named ergsac_cartpend
+
+# Build rule for target.
+ergsac_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ergsac_cartpend
+.PHONY : ergsac_cartpend
+
+# fast build rule for target.
+ergsac_cartpend/fast:
+	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
+.PHONY : ergsac_cartpend/fast
 
 #=============================================================================
 # Target rules for targets named mda_cartpend
@@ -176,6 +189,32 @@ sac_cartpend/fast:
 .PHONY : sac_cartpend/fast
 
 #=============================================================================
+# Target rules for targets named mig_mda_cartpend
+
+# Build rule for target.
+mig_mda_cartpend: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mig_mda_cartpend
+.PHONY : mig_mda_cartpend
+
+# fast build rule for target.
+mig_mda_cartpend/fast:
+	$(MAKE) -f CMakeFiles/mig_mda_cartpend.dir/build.make CMakeFiles/mig_mda_cartpend.dir/build
+.PHONY : mig_mda_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named dklsac_di_image
+
+# Build rule for target.
+dklsac_di_image: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 dklsac_di_image
+.PHONY : dklsac_di_image
+
+# fast build rule for target.
+dklsac_di_image/fast:
+	$(MAKE) -f CMakeFiles/dklsac_di_image.dir/build.make CMakeFiles/dklsac_di_image.dir/build
+.PHONY : dklsac_di_image/fast
+
+#=============================================================================
 # Target rules for targets named ergsac_doubleint
 
 # Build rule for target.
@@ -214,31 +253,32 @@ dklsac_doubleint/fast:
 	$(MAKE) -f CMakeFiles/dklsac_doubleint.dir/build.make CMakeFiles/dklsac_doubleint.dir/build
 .PHONY : dklsac_doubleint/fast
 
-#=============================================================================
-# Target rules for targets named ergsac_cartpend
+dklsac_di_image.o: dklsac_di_image.cpp.o
 
-# Build rule for target.
-ergsac_cartpend: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ergsac_cartpend
-.PHONY : ergsac_cartpend
+.PHONY : dklsac_di_image.o
 
-# fast build rule for target.
-ergsac_cartpend/fast:
-	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
-.PHONY : ergsac_cartpend/fast
+# target to build an object file
+dklsac_di_image.cpp.o:
+	$(MAKE) -f CMakeFiles/dklsac_di_image.dir/build.make CMakeFiles/dklsac_di_image.dir/dklsac_di_image.cpp.o
+.PHONY : dklsac_di_image.cpp.o
 
-#=============================================================================
-# Target rules for targets named edgedetect
+dklsac_di_image.i: dklsac_di_image.cpp.i
 
-# Build rule for target.
-edgedetect: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 edgedetect
-.PHONY : edgedetect
+.PHONY : dklsac_di_image.i
 
-# fast build rule for target.
-edgedetect/fast:
-	$(MAKE) -f CMakeFiles/edgedetect.dir/build.make CMakeFiles/edgedetect.dir/build
-.PHONY : edgedetect/fast
+# target to preprocess a source file
+dklsac_di_image.cpp.i:
+	$(MAKE) -f CMakeFiles/dklsac_di_image.dir/build.make CMakeFiles/dklsac_di_image.dir/dklsac_di_image.cpp.i
+.PHONY : dklsac_di_image.cpp.i
+
+dklsac_di_image.s: dklsac_di_image.cpp.s
+
+.PHONY : dklsac_di_image.s
+
+# target to generate assembly for a file
+dklsac_di_image.cpp.s:
+	$(MAKE) -f CMakeFiles/dklsac_di_image.dir/build.make CMakeFiles/dklsac_di_image.dir/dklsac_di_image.cpp.s
+.PHONY : dklsac_di_image.cpp.s
 
 dklsac_doubleint.o: dklsac_doubleint.cpp.o
 
@@ -517,17 +557,21 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... mig_mda_cartpend"
+	@echo "... rebuild_cache"
+	@echo "... edgedetect"
+	@echo "... ergsac_cartpend"
 	@echo "... mda_cartpend"
 	@echo "... sac_doubleint"
 	@echo "... ergsac_mda"
 	@echo "... sac_cartpend"
+	@echo "... mig_mda_cartpend"
+	@echo "... dklsac_di_image"
 	@echo "... ergsac_doubleint"
 	@echo "... ergsac_dilincoln"
 	@echo "... dklsac_doubleint"
-	@echo "... rebuild_cache"
-	@echo "... ergsac_cartpend"
-	@echo "... edgedetect"
+	@echo "... dklsac_di_image.o"
+	@echo "... dklsac_di_image.i"
+	@echo "... dklsac_di_image.s"
 	@echo "... dklsac_doubleint.o"
 	@echo "... dklsac_doubleint.i"
 	@echo "... dklsac_doubleint.s"

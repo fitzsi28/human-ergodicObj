@@ -34,14 +34,14 @@ Nt = np.shape(X)[0]
 x_approx=1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[0],x2[0]], cov=[[Sigma,0.0],[0.0,Sigma]])
 for i in range(1,Nt):
     x_approx = x_approx +1./Nt*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [x1[i],x2[i]], cov=[[Sigma,0.0],[0.0,Sigma]])
-"""
+
 plt.figure()
 plt.plot(tlist,data[0:-1,5])
 plt.plot(tlist,data[0:-1,6])
 #plt.plot(samps[0],samps[1],'k.')
 #plt.ylim(-0.5,0.5)
 #plt.xlim(-0.5,0.5)
-"""
+
 
 plt.figure()
 plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))

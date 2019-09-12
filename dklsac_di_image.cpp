@@ -3,7 +3,7 @@
 #include <fstream>
 #include<math.h>
 #include<armadillo>
-
+#include <opencv2/opencv.hpp>//namespace cv
 using namespace std;
 
 #include"SAC_MDA/doubleint.hpp"
@@ -11,27 +11,27 @@ using namespace std;
 #include"SAC_MDA/SAC.hpp"
 #include"SAC_MDA/rk4_int.hpp"
 
-
+cv::Mat image;
 double xbound = 0.5,ybound = 0.5;
 
 double phid(const arma::vec& x){
-  arma::vec lbounds = {{-xbound},{-ybound}};
-  //arma::vec x = {{x1},{x2}};
-  arma::vec Mu= {{-0.2},{0.1}}; //Mu=Mu-lbounds;
-  arma::vec Mu2 = {{0.3},{-0.1}}; //Mu2 = Mu2-lbounds;
-  arma::vec Mu3 = {{0.35},{0.3}}; //Mu3 = Mu3-lbounds;
-  arma::mat Sig = {{0.001,0.},{0.,0.001}};
-  arma::mat Sig2 = {{0.01,0.},{0.,0.01}};
-  double dist1 = 0.3*arma::as_scalar(arma::expmat(-0.5*(x-Mu).t()*Sig.i()*(x-Mu))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
-  double dist2 = 0.3*arma::as_scalar(arma::expmat(-0.5*(x-Mu2).t()*Sig2.i()*(x-Mu2))/pow(pow(2*PI,2)*arma::det(Sig2),0.5));
-  double dist3 = 0.4*arma::as_scalar(arma::expmat(-0.5*(x-Mu3).t()*Sig.i()*(x-Mu3))/pow(pow(2*PI,2)*arma::det(Sig),0.5));
-return dist1+dist2+dist3;};
+  double ind1 = x(0)*2200.; double ind2 = x(1)*2200.;
+  double intensity = image.at<uchar>(round(ind1),round(ind2));
+  double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);
+  intensity = intensity/totalInt;
+  return intensity;};
 
 arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   ofstream myfile;
+{   //string imageName("lincoln2.png");
+    string imageName("gauss.png");
+    //string imageName("apple.png");
+    cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+    image = (cv::Scalar::all(255)-imagetemp);cout<<cv::mean(image)[0]<<"\n";
+    cv::flip(image,image,-1);
+    ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./100.);
     syst1.Ucurr = unom(0); 
@@ -40,8 +40,8 @@ int main()
     //syst1.Xcurr = {-0.2,0.0,0.1,0.0};
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};//must be initialized before instantiating cost
     arma::mat R = 0.0001*arma::eye(2,2); double q=1.;
-    arma::vec umax = {10.0,10.0};
-    double T = 0.6;
+    arma::vec umax = {40.0,40.0};
+    double T = 0.1;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
     dklcost<DoubleInt> cost (q,R,100,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
