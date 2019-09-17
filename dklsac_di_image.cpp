@@ -31,6 +31,7 @@ int main()
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,0);
+    cv::blur(image,image,cv::Size(100,100));
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./60.);
@@ -43,13 +44,13 @@ int main()
     arma::vec umax = {40.0,40.0};
     double T = 0.5;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,1000,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,500,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<60.0){
+    while (syst1.tcurr<10.0){
     //double start_time = omp_get_wtime();
     cost.xmemory(syst1.Xcurr);
     //cout <<"resamp time: "<< 1000 * (omp_get_wtime() - start_time)<<endl;
