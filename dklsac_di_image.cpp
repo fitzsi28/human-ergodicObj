@@ -14,8 +14,8 @@ using namespace std;
 cv::Mat image;
 double xbound = 0.5,ybound = 0.5;
 
-double phid(const arma::vec& x){
-  double ind1 = x(0)*2200.; double ind2 = x(1)*2200.;
+double phid(const arma::vec& x){ 
+  double ind1 = (x(1)+0.5)*2200.; double ind2 = (x(0)+0.5)*2200.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
   double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);
   intensity = intensity/totalInt;
@@ -25,32 +25,31 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   string imageName("lincoln2.png");
+{   //string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    //string imageName("apple.png");
+    string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
-    cv::flip(image,image,-1);
+    cv::flip(image,image,0);
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
-    DoubleInt syst1 (1./100.);
+    DoubleInt syst1 (1./60.);
     syst1.Ucurr = unom(0); 
     random_device rd; mt19937 eng(rd());
     uniform_real_distribution<> distr(-0.4,0.4);
     //syst1.Xcurr = {-0.2,0.0,0.1,0.0};
     syst1.Xcurr = {distr(eng),distr(eng),distr(eng),distr(eng)};//must be initialized before instantiating cost
     arma::mat R = 0.0001*arma::eye(2,2); double q=1.;
-    arma::vec umax = {10.0,10.0};
-    double T = 0.6;
+    arma::vec umax = {40.0,40.0};
+    double T = 0.5;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,100,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,1000,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
- 
     arma::vec xwrap;
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<20.0){
+    while (syst1.tcurr<60.0){
     //double start_time = omp_get_wtime();
     cost.xmemory(syst1.Xcurr);
     //cout <<"resamp time: "<< 1000 * (omp_get_wtime() - start_time)<<endl;
