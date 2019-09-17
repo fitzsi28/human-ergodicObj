@@ -31,6 +31,7 @@ int main()
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,0);
+    cv::blur(image,image,cv::Size(100,100));//for line drawings, the image must be blurred
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./60.);
@@ -43,16 +44,14 @@ int main()
     arma::vec umax = {40.0,40.0};
     double T = 0.5;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,1000,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,500,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<60.0){
-    //double start_time = omp_get_wtime();
+    while (syst1.tcurr<10.0){
     cost.xmemory(syst1.Xcurr);
-    //cout <<"resamp time: "<< 1000 * (omp_get_wtime() - start_time)<<endl;
     if(fmod(syst1.tcurr,2)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n"<<syst1.Xcurr;
     myfile<<syst1.tcurr<<",";
     xwrap = syst1.proj_func(syst1.Xcurr); 
@@ -62,7 +61,9 @@ int main()
     myfile<<cost.calc_cost(syst1.Xcurr,syst1.Ucurr);
     myfile<<"\n";
     syst1.step();
+    //double start_time = omp_get_wtime();
     sacsys.SAC_calc();
+    //if((omp_get_wtime() - start_time)>1./60.) cout <<"calc time: "<<(omp_get_wtime() - start_time)<<" t= "<<syst1.tcurr<<endl;
     syst1.Ucurr = sacsys.ulist.col(0); 
     sacsys.unom_shift();  
      
@@ -75,6 +76,9 @@ int main()
  arma::mat temp = cost.ps_i.t();
  temp.save(samples,arma::csv_ascii);
  samples.close();
+ //cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+ //cv::imshow( "Display window", image );                   // Show our image inside it.
+ //cv::waitKey(0);
     
 }
 
