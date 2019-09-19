@@ -14,7 +14,7 @@ using namespace std;
 cv::Mat image;
 double xbound = 0.5,ybound = 0.5;
 
-double phid(const arma::vec& x){ 
+double phid(const arma::vec& x){
   double ind1 = (x(1)+0.5)*2200.; double ind2 = (x(0)+0.5)*2200.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
   double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);
@@ -31,7 +31,8 @@ int main()
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,0);
-    cv::blur(image,image,cv::Size(100,100));
+    cv::blur(image,image,cv::Size(50,50));
+    //cv::GaussianBlur(image,image,(5,5),0);
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./60.);
@@ -44,7 +45,7 @@ int main()
     arma::vec umax = {40.0,40.0};
     double T = 0.5;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,500,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,1000,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
            
@@ -69,13 +70,16 @@ int main()
      
     } 
       
-    myfile.close();
+ myfile.close();
  ofstream samples;
  samples.open("Domain_samples.csv");
  cost.domainsamps.save(samples,arma::csv_ascii);
  arma::mat temp = cost.ps_i.t();
  temp.save(samples,arma::csv_ascii);
  samples.close();
-    
+ 
+ //cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+ //cv::imshow( "Display window", image );                   // Show our image inside it.
+ //cv::waitKey(0); 
 }
 
