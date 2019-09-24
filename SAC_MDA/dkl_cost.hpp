@@ -63,8 +63,10 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
   return a;}
 
 template<class system> double dklcost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
-  double J1 = 0.,Jtemp; 
-  arma::mat xjoined = arma::join_rows(xpast.cols(0,t_now),x);
+  double J1 = 0.,Jtemp;
+  arma::mat xjoined;
+  if(t_now<=180){xjoined = arma::join_rows(xpast.cols(0,t_now),x);}
+  else{xjoined = arma::join_rows(xpast.cols(t_now-120,t_now),x);};
   qs_disc(xjoined);
   J1 = -arma::as_scalar(arma::sum(ps_i%arma::log(qs_i)));
   J1 = Q*J1;
