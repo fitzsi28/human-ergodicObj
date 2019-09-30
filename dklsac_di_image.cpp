@@ -30,17 +30,21 @@ int main()
     //string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);cv::blur(image,image,cv::Size(50,50));
-    cv::Mat flatImg = image.reshape(0,1); //const size_t imgWidth = flatImg.size().width;
-    array<uchar,4840000> ImgArr = flatImg;
-    random_device rd1; mt19937 eng1(rd1()); uniform_real_distribution<> distr1(0,2200);
-    int m = distr1(eng1), n=distr1(eng1);
-    cout<<"original: "<<(int)image.at<uchar>(m,n)<<"\n new: "<<static_cast<unsigned>(ImgArr[(m*2200)+n])<<"\n";
-    for(int k = -5;k<=5;k++){
-        cout<<static_cast<unsigned>(ImgArr[k+(m*2200)+n])<<" ";
-    };cout<<endl;
-    discrete_distribution<uchar> dist1(ImgArr.begin(),ImgArr.end());
-    uchar samp = dist1(eng1); cout<<" random draw: "<<static_cast<unsigned>(samp)<<endl;
-    cout<<static_cast<unsigned>(dist1.min())<<" "<<static_cast<unsigned>(dist1.max())<<endl;
+    double* imgCDF = new double[4840000]; double imgNorm = cv::mean(image)[0]*2200*2200;
+   imgCDF[0] = image.at<uchar>(0,0)/imgNorm; cout<<imgCDF[0]<<" ";
+   for(int m=0;m<2200;m++){
+        for(int n=0;n<2200;n++){
+          imgCDF[(m*2200)+n+1] = imgCDF[(m*2200)+n]+image.at<uchar>(m,n)/imgNorm;
+        };
+    };
+    random_device rd1; mt19937 eng1(rd1()); uniform_real_distribution<> distr1(0,1);
+    double k = distr1(eng1); cout<<"k: "<<k<<" ";
+    int i = 0;
+    while (imgCDF[i+1]<=k){
+        i++;
+    };cout<<imgCDF[i]<<" "<<i<<" "<<i/2200<<" "<<i-(i/2200)*2200<<endl;
+    cout<<(double)image.at<uchar>(i/2200,i-(i/2200)*2200)<<endl;
+    
     cv::flip(image,image,0);
     
     //cv::GaussianBlur(image,image,(5,5),0);
