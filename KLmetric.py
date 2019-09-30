@@ -37,19 +37,19 @@ for i in range(1,Nt):
     x_approx = x_approx +1./Nt*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [x1[i],x2[i]], cov=[[Sigma,0.0],[0.0,Sigma]])
 
 Nsamp = np.shape(samps)[1]
-phi_approx=samps[2,0]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,0],samps[1,0]], cov=[[Sigma,0.0],[0.0,Sigma]])
+phi_approx=samps[2,0]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,0],samps[1,0]], cov=[[Sigma/10,0.0],[0.0,Sigma/10]])
 for i in range(1,Nsamp):
-    phi_approx = phi_approx +samps[2,i]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,i],samps[1,i]], cov=[[Sigma,0.0],[0.0,Sigma]])
+    phi_approx = phi_approx +samps[2,i]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,i],samps[1,i]], cov=[[Sigma/10,0.0],[0.0,Sigma/10]])
 
 print(np.count_nonzero(samps[2]))
-"""    
+    
 plt.figure()
 #plt.plot(tlist,data[0:-1,5])
 #plt.plot(tlist,data[0:-1,6])
 plt.plot(samps[0],samps[1],'k.')
 plt.ylim(-0.5,0.5)
 plt.xlim(-0.5,0.5)
-"""
+
 
 plt.figure()
 #plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))

@@ -7,7 +7,7 @@
 using namespace std;
 
 #include"SAC_MDA/doubleint.hpp"
-#include"SAC_MDA/dkl_cost.hpp"
+#include"SAC_MDA/dklimg_cost.hpp"
 #include"SAC_MDA/SAC.hpp"
 #include"SAC_MDA/rk4_int.hpp"
 
@@ -15,7 +15,7 @@ cv::Mat image;
 double xbound = 0.5,ybound = 0.5;
 
 double phid(const arma::vec& x){
-  double ind1 = (x(1)+0.5)*2200.; double ind2 = (x(0)+0.5)*2200.;
+  double ind1 = (x(1)+0.5)*image.size().width; double ind2 = (x(0)+0.5)*2200.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
   double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);
   intensity = intensity/totalInt;
@@ -25,12 +25,16 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   string imageName("lincoln2.png");
+{   //string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    //string imageName("apple.png");
+    string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-    image = (cv::Scalar::all(255)-imagetemp);cv::blur(image,image,cv::Size(50,50));
-    double* imgCDF = new double[4840000]; double imgNorm = cv::mean(image)[0]*2200*2200;
+    image = (cv::Scalar::all(255)-imagetemp);
+    cv::blur(image,image,cv::Size(50,50));
+    cv::flip(image,image,0);
+ 
+ /*
+   double* imgCDF = new double[4840000]; double imgNorm = cv::mean(image)[0]*2200*2200;
    imgCDF[0] = image.at<uchar>(0,0)/imgNorm; cout<<imgCDF[0]<<" ";
    for(int m=0;m<2200;m++){
         for(int n=0;n<2200;n++){
@@ -42,12 +46,10 @@ int main()
     int i = 0;
     while (imgCDF[i+1]<=k){
         i++;
-    };cout<<imgCDF[i]<<" "<<i<<" "<<i/2200<<" "<<i-(i/2200)*2200<<endl;
+    };cout<<imgCDF[i]<<" "<<i<<" "<<i/2200<<" "<<i-(i/2200)*2200<<" "<<fmod(i,2200)<<endl;
     cout<<(double)image.at<uchar>(i/2200,i-(i/2200)*2200)<<endl;
+    */
     
-    cv::flip(image,image,0);
-    
-    //cv::GaussianBlur(image,image,(5,5),0);
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./60.);
@@ -60,13 +62,13 @@ int main()
     arma::vec umax = {40.0,40.0};
     double T = 0.5;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,500,SIGMA,0,2,phid,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,300,SIGMA,0,2,image,xbound,ybound,T,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<0.1){
+    while (syst1.tcurr<10.0){
     //double start_time = omp_get_wtime();
     cost.xmemory(syst1.Xcurr);
     if(fmod(syst1.tcurr,2)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n"<<syst1.Xcurr;
