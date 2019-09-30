@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named dklmda_di_image
+
+# Build rule for target.
+dklmda_di_image: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 dklmda_di_image
+.PHONY : dklmda_di_image
+
+# fast build rule for target.
+dklmda_di_image/fast:
+	$(MAKE) -f CMakeFiles/dklmda_di_image.dir/build.make CMakeFiles/dklmda_di_image.dir/build
+.PHONY : dklmda_di_image/fast
+
+#=============================================================================
 # Target rules for targets named edgedetect
 
 # Build rule for target.
@@ -252,6 +265,33 @@ dklsac_doubleint: cmake_check_build_system
 dklsac_doubleint/fast:
 	$(MAKE) -f CMakeFiles/dklsac_doubleint.dir/build.make CMakeFiles/dklsac_doubleint.dir/build
 .PHONY : dklsac_doubleint/fast
+
+dklmda_di_image.o: dklmda_di_image.cpp.o
+
+.PHONY : dklmda_di_image.o
+
+# target to build an object file
+dklmda_di_image.cpp.o:
+	$(MAKE) -f CMakeFiles/dklmda_di_image.dir/build.make CMakeFiles/dklmda_di_image.dir/dklmda_di_image.cpp.o
+.PHONY : dklmda_di_image.cpp.o
+
+dklmda_di_image.i: dklmda_di_image.cpp.i
+
+.PHONY : dklmda_di_image.i
+
+# target to preprocess a source file
+dklmda_di_image.cpp.i:
+	$(MAKE) -f CMakeFiles/dklmda_di_image.dir/build.make CMakeFiles/dklmda_di_image.dir/dklmda_di_image.cpp.i
+.PHONY : dklmda_di_image.cpp.i
+
+dklmda_di_image.s: dklmda_di_image.cpp.s
+
+.PHONY : dklmda_di_image.s
+
+# target to generate assembly for a file
+dklmda_di_image.cpp.s:
+	$(MAKE) -f CMakeFiles/dklmda_di_image.dir/build.make CMakeFiles/dklmda_di_image.dir/dklmda_di_image.cpp.s
+.PHONY : dklmda_di_image.cpp.s
 
 dklsac_di_image.o: dklsac_di_image.cpp.o
 
@@ -557,6 +597,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... dklmda_di_image"
 	@echo "... rebuild_cache"
 	@echo "... edgedetect"
 	@echo "... ergsac_cartpend"
@@ -569,6 +610,9 @@ help:
 	@echo "... ergsac_doubleint"
 	@echo "... ergsac_dilincoln"
 	@echo "... dklsac_doubleint"
+	@echo "... dklmda_di_image.o"
+	@echo "... dklmda_di_image.i"
+	@echo "... dklmda_di_image.s"
 	@echo "... dklsac_di_image.o"
 	@echo "... dklsac_di_image.i"
 	@echo "... dklsac_di_image.s"

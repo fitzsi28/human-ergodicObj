@@ -63,7 +63,7 @@ ref = multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-2,1], cov=[[0.5,0.0],
 #delta = multivariate_normal.pdf(np.dstack((xi,yi)), mean = [0,0], cov=[[0.0025,0.],[0.,0.01]])
 
 plt.figure()
-plt.plot(tlist,cost)
+plt.plot(tlist,data[0:-1,6])#cost)
 
 plt.figure()
 ax = plt.gca()

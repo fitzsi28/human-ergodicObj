@@ -14,7 +14,7 @@ using namespace std;
 cv::Mat image;
 double xbound = 0.5,ybound = 0.5;
 
-double phid(const arma::vec& x){ 
+double phid(const arma::vec& x){
   double ind1 = (x(1)+0.5)*2200.; double ind2 = (x(0)+0.5)*2200.;
   double intensity = image.at<uchar>(round(ind1),round(ind2));
   double totalInt = cv::mean(image)[0]*(xbound*2)*(ybound*2);
@@ -25,13 +25,25 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   //string imageName("lincoln2.png");
+{   string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    string imageName("apple.png");
+    //string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-    image = (cv::Scalar::all(255)-imagetemp);
+    image = (cv::Scalar::all(255)-imagetemp);cv::blur(image,image,cv::Size(50,50));
+    cv::Mat flatImg = image.reshape(0,1); //const size_t imgWidth = flatImg.size().width;
+    array<uchar,4840000> ImgArr = flatImg;
+    random_device rd1; mt19937 eng1(rd1()); uniform_real_distribution<> distr1(0,2200);
+    int m = distr1(eng1), n=distr1(eng1);
+    cout<<"original: "<<(int)image.at<uchar>(m,n)<<"\n new: "<<static_cast<unsigned>(ImgArr[(m*2200)+n])<<"\n";
+    for(int k = -5;k<=5;k++){
+        cout<<static_cast<unsigned>(ImgArr[k+(m*2200)+n])<<" ";
+    };cout<<endl;
+    discrete_distribution<uchar> dist1(ImgArr.begin(),ImgArr.end());
+    uchar samp = dist1(eng1); cout<<" random draw: "<<static_cast<unsigned>(samp)<<endl;
+    cout<<static_cast<unsigned>(dist1.min())<<" "<<static_cast<unsigned>(dist1.max())<<endl;
     cv::flip(image,image,0);
-    cv::blur(image,image,cv::Size(100,100));//for line drawings, the image must be blurred
+    
+    //cv::GaussianBlur(image,image,(5,5),0);
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
     DoubleInt syst1 (1./60.);
@@ -50,7 +62,8 @@ int main()
            
     myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
  
-    while (syst1.tcurr<10.0){
+    while (syst1.tcurr<0.1){
+    //double start_time = omp_get_wtime();
     cost.xmemory(syst1.Xcurr);
     if(fmod(syst1.tcurr,2)<syst1.dt)cout<<"Time: "<<syst1.tcurr<<"\n"<<syst1.Xcurr;
     myfile<<syst1.tcurr<<",";
@@ -69,16 +82,17 @@ int main()
      
     } 
       
-    myfile.close();
+ myfile.close();
  ofstream samples;
  samples.open("Domain_samples.csv");
  cost.domainsamps.save(samples,arma::csv_ascii);
  arma::mat temp = cost.ps_i.t();
  temp.save(samples,arma::csv_ascii);
  samples.close();
+
  //cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
  //cv::imshow( "Display window", image );                   // Show our image inside it.
- //cv::waitKey(0);
-    
+ //cv::waitKey(0); 
+
 }
 
