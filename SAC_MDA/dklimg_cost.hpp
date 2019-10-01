@@ -14,7 +14,7 @@ class dklcost {
   arma::uvec X_DKL;
   int K;//number of samples in the search domain
   arma::mat sigma; 
-  int MAXINT=600;
+  int MAXINT=240;
   public:
     arma::mat xpast;
     arma::mat domainsamps;
@@ -68,8 +68,9 @@ template<class system> arma::vec dklcost<system>::dldx (const arma::vec&x, const
 template<class system> double dklcost<system>::calc_cost (const arma::mat& x,const arma::mat& u){
   double J1 = 0.,Jtemp;
   arma::mat xjoined;
-  if(t_now<=180){xjoined = arma::join_rows(xpast.cols(0,t_now),x);}
-  else{xjoined = arma::join_rows(xpast.cols(t_now-120,t_now),x);};
+  
+  if(t_now<=MAXINT){xjoined = arma::join_rows(xpast.cols(0,t_now),x);}
+  else{xjoined = arma::join_rows(xpast.cols(t_now-MAXINT,t_now),x);};
   qs_disc(xjoined);
   J1 = -arma::as_scalar(arma::sum(ps_i%arma::log(qs_i)));
   J1 = Q*J1;
@@ -83,32 +84,18 @@ template<class system> void dklcost<system>::qs_disc(const arma::mat& x){//doubl
   #pragma omp parallel for
   for(int n=0;n<qs_i.n_rows;n++){
     qs_i(n) = 0.;
-    if(x.n_cols<MAXINT){
-      for(int j=0;j<x.n_cols;j++){
+    for(int j=0;j<x.n_cols;j++){
         arma::vec sj = domainsamps.col(n)-sys->proj_func(x.col(j)).elem(X_DKL);
         qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sigma.i()*sj));
       };
-    }else{
-      arma::vec ind = arma::randi<arma::vec>(MAXINT,arma::distr_param(0,MAXINT-1));
-      for(int j=0;j<MAXINT;j++){
-        //int index = arma::randi<int>(arma::distr_param(0,MAXINT-1));
-        arma::vec sj = domainsamps.col(n)-sys->proj_func(x.col(ind(j))).elem(X_DKL);
-        qs_i(n)+=sys->dt*exp(-0.5*arma::as_scalar(sj.t()*sigma.i()*sj));
-      }; 
-        
-    };    
-  };
+    };
   qs_i=arma::normalise(qs_i,1);//normalise the discrete pdf over the samples
-  //if((omp_get_wtime() - start_time)>1./60.) cout <<"qi time: "<<(omp_get_wtime() - start_time)<<endl;
-}
+  }
       
 template<class system> void dklcost<system>::resample(){
   //Choose K samples over the domain [[-L1,L1],[-L2,L2]]
-  //arma::vec domainsize = {2.*L1,2.*L2};//{2*L1,2*L2};
-  //domainsamps=arma::diagmat(domainsize)*arma::randu<arma::mat>(2,K);//generate uniform random samples from 0 to 2*L
-  //domainsamps.each_col() -= (0.5*domainsize);//shift samples to go from -L to L
   //setup CDF of image for inverse transform sampling
-  double epsilon = pow(10,-3);
+  double epsilon = pow(10,-1);
   double* imgCDF = new double[img.size().width*img.size().height]; 
   double imgNorm = (cv::mean(img)[0]+epsilon)*img.size().width*img.size().height;
     imgCDF[0] = (img.at<uchar>(0,0)+epsilon)/imgNorm; 
@@ -135,7 +122,7 @@ template<class system> void dklcost<system>::resample(){
 template<class system> void dklcost<system>::xmemory(const arma::vec& x){
   xpast.col(t_now)= x;
   t_now++;
-  resample();
+  //resample();
 }
 template<class system> double dklcost<system>::phid(const arma::vec& x){
   double ind1 = (x(1)+L1)*img.size().width; double ind2 = (x(0)+L2)*img.size().width;
