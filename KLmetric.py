@@ -42,7 +42,7 @@ for i in range(1,Nsamp):
     phi_approx = phi_approx +samps[2,i]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,i],samps[1,i]], cov=[[Sigma/10,0.0],[0.0,Sigma/10]])
 
 print(np.count_nonzero(samps[2]))
-    
+   
 plt.figure()
 #plt.plot(tlist,data[0:-1,5])
 #plt.plot(tlist,data[0:-1,6])
@@ -74,7 +74,7 @@ cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
 
-plt.figure()
-plt.plot(tlist,data[0:-1,7])
+#plt.figure()
+#plt.plot(tlist,data[0:-1,7])
 
 plt.show()

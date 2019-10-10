@@ -18,9 +18,9 @@ arma::vec unom(double t){
         return arma::zeros(2,1);};
 
 int main()
-{   //string imageName("lincoln2.png");
+{   string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    string imageName("apple.png");
+    //string imageName("apple.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::blur(image,image,cv::Size(50,50));
@@ -38,7 +38,7 @@ int main()
     arma::vec umax = {10.0,10.0};
     double T = 0.6;
     arma::mat SIGMA = 0.01*arma::eye(2,2);
-    dklcost<DoubleInt> cost (q,R,65,SIGMA,0,2,image,xbound,ybound,T,&syst1);
+    dklcost<DoubleInt> cost (q,R,65,SIGMA,0,2,image,xbound,ybound,T,4.0,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     arma::vec xwrap;
            
