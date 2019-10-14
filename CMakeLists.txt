@@ -48,5 +48,8 @@ target_link_libraries(dklsac_di_image ${ARMADILLO_LIBRARIES} ${OpenMP_LIBS} ${Op
 add_executable(dklmda_di_image dklmda_di_image.cpp)
 target_link_libraries(dklmda_di_image ${ARMADILLO_LIBRARIES} ${OpenMP_LIBS} ${OpenCV_LIBS})
 
+add_executable(dklmda_si_image dklmda_si_image.cpp)
+target_link_libraries(dklmda_si_image ${ARMADILLO_LIBRARIES} ${OpenMP_LIBS} ${OpenCV_LIBS})
+
 add_executable(edgedetect edgedetect.cpp)
 target_link_libraries(edgedetect ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
