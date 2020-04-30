@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 set(EXECUTABLE_OUTPUT_PATH build/)
-include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${OpenMP_INCLUDE_DIRS})
+include_directories(${ARMADILLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${OpenMP_INCLUDE_DIRS} "/home/kt-fitz/human-ergodicObj")
 
 set(EXECUTABLE_OUTPUT_PATH build/)
 
@@ -53,3 +53,6 @@ target_link_libraries(dklmda_si_image ${ARMADILLO_LIBRARIES} ${OpenMP_LIBS} ${Op
 
 add_executable(edgedetect edgedetect.cpp)
 target_link_libraries(edgedetect ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})
+
+add_executable(cleanfiles filesplit.cpp)
+target_link_libraries(cleanfiles ${ARMADILLO_LIBRARIES} ${OpenCV_LIBS} ${OpenMP_LIBS})

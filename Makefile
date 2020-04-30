@@ -58,8 +58,8 @@ CMAKE_BINARY_DIR = /home/kt-fitz/human-ergodicObj
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -148,6 +148,19 @@ ergsac_cartpend: cmake_check_build_system
 ergsac_cartpend/fast:
 	$(MAKE) -f CMakeFiles/ergsac_cartpend.dir/build.make CMakeFiles/ergsac_cartpend.dir/build
 .PHONY : ergsac_cartpend/fast
+
+#=============================================================================
+# Target rules for targets named cleanfiles
+
+# Build rule for target.
+cleanfiles: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cleanfiles
+.PHONY : cleanfiles
+
+# fast build rule for target.
+cleanfiles/fast:
+	$(MAKE) -f CMakeFiles/cleanfiles.dir/build.make CMakeFiles/cleanfiles.dir/build
+.PHONY : cleanfiles/fast
 
 #=============================================================================
 # Target rules for targets named mda_cartpend
@@ -522,6 +535,33 @@ ergsac_mda.cpp.s:
 	$(MAKE) -f CMakeFiles/ergsac_mda.dir/build.make CMakeFiles/ergsac_mda.dir/ergsac_mda.cpp.s
 .PHONY : ergsac_mda.cpp.s
 
+filesplit.o: filesplit.cpp.o
+
+.PHONY : filesplit.o
+
+# target to build an object file
+filesplit.cpp.o:
+	$(MAKE) -f CMakeFiles/cleanfiles.dir/build.make CMakeFiles/cleanfiles.dir/filesplit.cpp.o
+.PHONY : filesplit.cpp.o
+
+filesplit.i: filesplit.cpp.i
+
+.PHONY : filesplit.i
+
+# target to preprocess a source file
+filesplit.cpp.i:
+	$(MAKE) -f CMakeFiles/cleanfiles.dir/build.make CMakeFiles/cleanfiles.dir/filesplit.cpp.i
+.PHONY : filesplit.cpp.i
+
+filesplit.s: filesplit.cpp.s
+
+.PHONY : filesplit.s
+
+# target to generate assembly for a file
+filesplit.cpp.s:
+	$(MAKE) -f CMakeFiles/cleanfiles.dir/build.make CMakeFiles/cleanfiles.dir/filesplit.cpp.s
+.PHONY : filesplit.cpp.s
+
 mda_cartpend.o: mda_cartpend.cpp.o
 
 .PHONY : mda_cartpend.o
@@ -641,6 +681,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edgedetect"
 	@echo "... ergsac_cartpend"
+	@echo "... cleanfiles"
 	@echo "... mda_cartpend"
 	@echo "... sac_doubleint"
 	@echo "... ergsac_mda"
@@ -678,6 +719,9 @@ help:
 	@echo "... ergsac_mda.o"
 	@echo "... ergsac_mda.i"
 	@echo "... ergsac_mda.s"
+	@echo "... filesplit.o"
+	@echo "... filesplit.i"
+	@echo "... filesplit.s"
 	@echo "... mda_cartpend.o"
 	@echo "... mda_cartpend.i"
 	@echo "... mda_cartpend.s"
