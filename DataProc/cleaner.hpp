@@ -9,6 +9,7 @@
 using namespace std;
 
 #include "Virtual_Fixt/imagewalls.hpp"
+#include "dkl.hpp"
 const int BOUND = 100;
 
 struct coordtrans{
@@ -23,6 +24,11 @@ class cleaner{
   imagewalls banana{"banana.png",BOUND,1.0,1.0};
   imagewalls house{"house.png",BOUND,1.0,1.0};
   imagewalls umbrella{"umbrella.png",BOUND,1.0,1.0};
+  arma::mat SIGMA = 0.01*arma::eye(2,2);
+  dklcost appledkl{"apple.png",50,100,SIGMA,10.,1./100.};
+  dklcost bananadkl{"banana.png",1,100,SIGMA,10.,1./100.};
+  dklcost housedkl{"house.png",50,100,SIGMA,10.,1./100.};
+  dklcost umbrelladkl{"umbrella.png",100,100,SIGMA,10.,1./100.};
   vector<string> filetypes;
     
   inline double transformcoords(float q, coordtrans Kq){
@@ -50,18 +56,29 @@ class cleaner{
       filetypes.push_back("_umbrella_p_set03_mda.csv");
     };
     void crop_data(int s,int f);
-    coordtrans transelect(int s, int f, int i);
+    coordtrans imtrans(int s, int f, int i);
+    coordtrans xytrans(int s, int f, int i);
     int imageselect(int f);
-    //function to select correct image comparison
+    int imageconvert(string);
 };
 
-coordtrans cleaner::transelect(int sub, int fnum, int inum){
+coordtrans cleaner::imtrans(int sub, int fnum, int inum){
     coordtrans K;
     K.scale = 2200;K.offset=0.; K.mir=1.;K.refl=0.;
     if(fnum>0 and fnum <=4){K.scale=1;}
     if(fnum>4 and fnum <=8){K.offset = 0.5;}
     if(sub<=13){
         if(inum ==1 or inum ==4){K.mir=-1.;K.refl=2200.;};
+    }
+  return K;  
+}
+coordtrans cleaner::xytrans(int sub, int fnum, int inum){
+    coordtrans K;
+    K.scale = 1;K.offset=0.; K.mir=1.;K.refl=0.;
+    if(fnum>0 and fnum <=4){K.scale=1./2200.;K.offset=-1100;}
+    if(fnum==0 or fnum>8){K.offset = -0.5;}
+    if(sub<=13){
+        if(inum ==1 or inum ==4){K.mir=-1.;};
     }
   return K;  
 }
@@ -73,22 +90,34 @@ int cleaner::imageselect(int fnum){
     else if(fnum==4 or fnum==8 or fnum==12){i=4;}
     return i;    
 }
+int cleaner::imageconvert(string imname){
+    int i=0;
+    if(imname=="apple"){i=1;}
+    else if(imname=="banana"){i=2;}
+    else if(imname=="house"){i=3;}
+    else if(imname=="umbrella"){i=4;}
+    return i;    
+}
 void cleaner::crop_data(int sub, int fnum){
     vector<string> imlabels;
     int imnum = imageselect(fnum);
-    coordtrans Kx = transelect(sub,fnum,imnum);
+    coordtrans Kx = imtrans(sub,fnum,imnum);
     coordtrans Ky = Kx; Ky.mir=1.;Ky.refl=0.;
+    coordtrans Jx = xytrans(sub,fnum,imnum);
+    coordtrans Jy = Jx; Jy.mir=1.;
     char buffer[17]; sprintf(buffer,"s%02d",sub);
-    ifstream imfile(oldir+"image-testing-order-"+buffer+".csv";
+    ifstream imfile(oldir+"image-testing-order-"+buffer+".csv");
     if(imfile.good()==false){return;};
     if(fnum==0){
       string trial;
       while(getline(imfile,trial)){
+         vector<string> datastr;
          stringstream ss(trial);
          while(ss.good()){
            string substr;
            getline(ss,substr,',');
-           imlabels.push_back(substr);};
+           datastr.push_back(substr);};
+         imlabels.push_back(datastr.at(1));
       };
     };
     
@@ -109,7 +138,8 @@ void cleaner::crop_data(int sub, int fnum){
     };
     ofstream newfile(filename);
     newfile<<colnames;
-    newfile<<",pixdist\n";
+    newfile<<",pixdist,x,y,dkl\n";
+    int trial = 0;float tlast;
     while(getline(myFile,line)){
         vector<string> datastr;
         stringstream ss(line);
@@ -118,17 +148,44 @@ void cleaner::crop_data(int sub, int fnum){
             getline(ss,substr,',');
             datastr.push_back(substr);}
         if(stof(datastr.at(1))<=10.0){
-            neighbor nearestpix;
+            if(stof(datastr.at(1))<tlast){trial++;
+              switch(imnum){
+                case 1: appledkl.resetx();
+                case 2: bananadkl.resetx();
+                case 3: housedkl.resetx();
+                case 4: umbrelladkl.resetx();
+              }
+                                         };
+            tlast = stof(datastr.at(1));
+            neighbor nearestpix; double dklcost;
+            if(fnum==0){imnum=imageconvert(imlabels.at(trial));
+              Kx = imtrans(sub,fnum,imnum);
+              Ky = Kx; Ky.mir=1.;Ky.refl=0.;
+              Jx = xytrans(sub,fnum,imnum);
+              Jy = Jx; Jy.mir=1.;};
             int x = transformcoords(stof(datastr.at(xind)),Kx);
             int y = transformcoords(stof(datastr.at(xind+1)),Ky);
+            double xfl =transformcoords(stof(datastr.at(xind)),Jx);
+            double yfl = transformcoords(stof(datastr.at(xind+1)),Jy);
+            arma::vec Xvec = {xfl,yfl};
             switch(imnum){
               case 1: nearestpix = apple.findnearest(x,y);
+                      dklcost=appledkl.calc_cost(Xvec);
+                      appledkl.xmemory(Xvec);
               case 2: nearestpix = banana.findnearest(x,y);
+                      dklcost=bananadkl.calc_cost(Xvec);
+                      bananadkl.xmemory(Xvec);
               case 3: nearestpix = house.findnearest(x,y);
+                      dklcost=housedkl.calc_cost(Xvec);
+                      housedkl.xmemory(Xvec);
               case 4: nearestpix = umbrella.findnearest(x,y);
+                      dklcost=umbrelladkl.calc_cost(Xvec);
+                      umbrelladkl.xmemory(Xvec);
             }
             newfile<<line;
-            newfile<<","<<nearestpix.dist<<"\n";
+            newfile<<','<<nearestpix.dist<<',';
+            newfile<<xfl<<','<<yfl<<',';
+            newfile<<dklcost<<"\n";
         };
     };
     newfile.close();
