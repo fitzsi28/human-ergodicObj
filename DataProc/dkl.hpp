@@ -27,8 +27,8 @@ class dklcost {
       dt=_dt; K = _K;// initialize with dt and  number of samples
       sigma=_sigma;
       MAXINT = _HIST/dt;//cout<<MAXINT<<endl;
-      //omp_set_dynamic(0); // get rid of dynamic stuff
-      //omp_set_num_threads(4); // set the number of threads
+      omp_set_dynamic(0); // get rid of dynamic stuff
+      omp_set_num_threads(16); // set the number of threads
       xpast.set_size(2,60/dt);//initialize xpast to hold up to a minute of data
       domainsamps.set_size(2,K);
       qs_i.zeros(K);ps_i.set_size(K);
@@ -52,7 +52,7 @@ double dklcost::calc_cost (const arma::mat& x){
   return J1;}
 
 void dklcost::qs_disc(const arma::mat& x){
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for(int n=0;n<qs_i.n_rows;n++){
     qs_i(n) = 0.;
     for(int j=0;j<x.n_cols;j++){
@@ -66,7 +66,7 @@ void dklcost::qs_disc(const arma::mat& x){
 void dklcost::resample(){
   //Choose K samples over the domain [[-L1,L1],[-L2,L2]]
   //setup CDF of image for inverse transform sampling
-  double epsilon = pow(10,-1);
+  double epsilon = pow(10,0);//-1);
   double* imgCDF = new double[img.size().width*img.size().height]; 
   double imgNorm = (cv::mean(img)[0]+epsilon)*img.size().width*img.size().height;
     imgCDF[0] = (img.at<uchar>(0,0)+epsilon)/imgNorm; 
@@ -78,7 +78,7 @@ void dklcost::resample(){
   //setup uniform real distribution for inverse transform sampling
   random_device rd; mt19937 eng(rd()); uniform_real_distribution<> distr(0,1);
   
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for(int n=0;n<ps_i.n_rows;n++){
     double k = distr(eng); 
     int i = 0;
