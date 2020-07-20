@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#include "Virtual_Fixt/imagewalls.hpp"
+#include "err.hpp"
 #include "dkl.hpp"
 const int BOUND = 100;
 
@@ -90,9 +90,9 @@ coordtrans cleaner::imtrans(int sub, int fnum, int inum){
     K.scale = 2200;K.offset=0.; K.mir=1.;K.refl=0.;
     if(fnum>0 and fnum <=4){K.scale=1;}
     if(fnum>4 and fnum <=8){K.offset = 0.5;}
-    if(sub<=13){
+    /*if(sub<=13){
         if(inum ==1 or inum ==4){K.mir=-1.;K.refl=2200.;};
-    }
+    }*/
   return K;  
 }
 coordtrans cleaner::xytrans(int sub, int fnum, int inum){
@@ -161,7 +161,7 @@ void cleaner::crop_data(int sub, int fnum){
     };
     ofstream newfile(filename);
     newfile<<colnames;
-    newfile<<",pixdist,x,y,dkl\n";
+    newfile<<",pixdist,distx,disty,x,y,dkl\n";
     int trial = 0;float tlast;
     while(getline(myFile,line)){
         vector<string> datastr;
@@ -206,7 +206,7 @@ void cleaner::crop_data(int sub, int fnum){
                       umbrelladkl.xmemory(Xvec);
             }
             newfile<<line;
-            newfile<<','<<nearestpix.dist<<',';
+            newfile<<','<<nearestpix.dist<<','<<x-nearestpix.x<<','<<y-nearestpix.y<<',';
             newfile<<xfl<<','<<yfl<<',';
             newfile<<dklcost<<"\n";
         };

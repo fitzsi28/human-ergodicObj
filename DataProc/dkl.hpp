@@ -28,7 +28,7 @@ class dklcost {
       sigma=_sigma;
       MAXINT = _HIST/dt;//cout<<MAXINT<<endl;
       omp_set_dynamic(0); // get rid of dynamic stuff
-      omp_set_num_threads(16); // set the number of threads
+      omp_set_num_threads(8); // set the number of threads
       xpast.set_size(2,60/dt);//initialize xpast to hold up to a minute of data
       domainsamps.set_size(2,K);
       qs_i.zeros(K);ps_i.set_size(K);

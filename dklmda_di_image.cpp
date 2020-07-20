@@ -21,12 +21,12 @@ int main()
     cv::Mat image;
     //string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    //string imageName("apple.png");
-    string imageName("strawberry.png");
+    string imageName("banana.png");
+    //string imageName("strawberry.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,0);
-    //cv::blur(image,image,cv::Size(100,100));//apple&house&lincoln 50, carv4&umbrella 100,banana&strawberry 0
+    //cv::blur(image,image,cv::Size(50,50));//apple&house&lincoln 50, carv4&umbrella 100,banana&strawberry 0
     
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
