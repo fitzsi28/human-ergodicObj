@@ -8,11 +8,14 @@ using namespace std;
 
 #include"SAC_MDA/doubleint.hpp"
 #include"SAC_MDA/dklimg_cost.hpp"
+#include"SAC_MDA/error_cost.hpp"
 #include"SAC_MDA/SAC.hpp"
 #include"SAC_MDA/rk4_int.hpp"
 #include"SAC_MDA/MIGMDA.hpp"
-#include"Virtual_Fixt/imagewalls.hpp"
-const int SEARCHRAD = 100;
+//#include"Virtual_Fixt/imagewalls.hpp"
+//const int SEARCHRAD = 100;
+arma::vec xd(double t){
+        return arma::zeros(4);};
 arma::vec unom(double t){
         return arma::zeros(2,1);};
 
@@ -44,7 +47,15 @@ int main()
     dklcost<DoubleInt> cost (q,R,75,SIGMA,0,2,image,xbound,ybound,T,4.0,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     migmda<DoubleInt,dklcost<DoubleInt>> demon(&sacsys, false);
-    imagewalls walltest(imageName, SEARCHRAD,1.0,1.0);
+    arma::mat Q = {
+        {0.00001,0.,0.,0.},
+        {0., 0.,0.,0.},
+        {0.,0.,0.00001,0.},
+        {0.,0.,0.,0.}};
+    errorcost<DoubleInt> cost2 (Q,R,xd,&syst1);
+    sac<DoubleInt,errorcost<DoubleInt>> sacsys2 (&syst2,&cost2,0.,T,umax,unom);
+    migmda<DoubleInt,errorcost<DoubleInt>> demon2(&sacsys2, false);
+    //imagewalls walltest(imageName, SEARCHRAD,10.0,10.0);
  
     arma::vec xwrap;
     uniform_real_distribution<> user(-10,10);
@@ -57,6 +68,7 @@ int main()
     while (syst1.tcurr<10.0){
     
     cost.xmemory(syst1.Xcurr);
+    //cost2.xmemory(syst2.Xcurr);
     //cout <<"resamp time: "<< 1000 * (omp_get_wtime() - start_time)<<endl;
     if(fmod(syst1.tcurr,2)<syst1.dt){
         cout<<"Time: "<<syst1.tcurr<<"\n";
@@ -77,14 +89,16 @@ int main()
     syst1.step(); syst2.step();
     //sacsys.SAC_calc();
     input = {user(generator),user(generator)};
-    arma::vec xtemp = syst2.stepcheck(input);
+    /*arma::vec xtemp = syst2.stepcheck(input);
     int x = 2200*(arma::as_scalar(xtemp(0))+0.5);
     int y = 2200*(arma::as_scalar(xtemp(2))+0.5);
     neighbor nearestpix;
     nearestpix = walltest.findnearest(x,y);
+    arma::vec forcetest = walltest.wallforce(x,y);
     if(nearestpix.dist<50.){pixelflag=true;};
     if(nearestpix.dist>200. and pixelflag==true){syst2.Ucurr = {-syst2.Xcurr(1)*60.,-syst2.Xcurr(3)*60.};
-        }else{syst2.Ucurr=input;};
+        }else{syst2.Ucurr=input;};*/
+    syst2.Ucurr = demon2.filter(input); 
     syst1.Ucurr = demon.filter(input); 
     sacsys.unom_shift();  
      
