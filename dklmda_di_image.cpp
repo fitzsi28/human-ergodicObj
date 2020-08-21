@@ -21,12 +21,12 @@ int main()
     cv::Mat image;
     //string imageName("lincoln2.png");
     //string imageName("gauss.png");
-    string imageName("banana.png");
+    string imageName("apple.png");
     //string imageName("strawberry.png");
     cv::Mat imagetemp = cv::imread(imageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
     image = (cv::Scalar::all(255)-imagetemp);
     cv::flip(image,image,0);
-    //cv::blur(image,image,cv::Size(50,50));//apple&house&lincoln 50, carv4&umbrella 100,banana&strawberry 0
+    cv::blur(image,image,cv::Size(50,50));//apple&house&lincoln 50, carv4&umbrella 100,banana&strawberry 0
     
     ofstream myfile;
     myfile.open ("DIdkltest.csv");
@@ -48,7 +48,7 @@ int main()
     default_random_engine generator;
     arma::vec input = {user(generator),user(generator)};
     
-    myfile<<"time,x,xdot,y,ydot,ux,uy,dklcost\n";
+    myfile<<"time,x,xdot,y,ydot,ux,uy,uinx,uiny\n";//dklcost,
     double start_time = omp_get_wtime();
     while (syst1.tcurr<10.0){
     
@@ -64,9 +64,10 @@ int main()
     myfile<<xwrap(0)<<","<<xwrap(1)<<",";
     myfile<<xwrap(2)<<","<<xwrap(3)<<",";
     myfile<<syst1.Ucurr(0)<<","<<syst1.Ucurr(1)<<",";
+    myfile<<input(0)<<","<<input(1);//<<",";
     //myfile<<cost.calc_cost(syst1.Xcurr,syst1.Ucurr);
     myfile<<"\n";
-    syst1.step();
+    syst1.step(); 
     //sacsys.SAC_calc();
     input = {user(generator),user(generator)};
     syst1.Ucurr = demon.filter(input); 

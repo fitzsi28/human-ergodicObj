@@ -25,9 +25,13 @@ ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0
 data=genfromtxt('/home/kt-fitz/human-ergodicObj/DIdkltest.csv',delimiter=",",dtype=float)
 data = np.delete(data,0,0)
 tlist = data[0:-1,0]
-x1 = ((data[50:-1,1]+0.5)*2200
-x2 = 2200-(data[50:-1,3]+0.5)*2200
+x1 = (data[50:-1,1])
+x2 = (data[50:-1,3])
 X = np.stack([x1,x2],axis=1)
+
+xn1 = (data[50:-1,7])
+xn2 = (data[50:-1,8])
+
 
 samps=genfromtxt('/home/kt-fitz/human-ergodicObj/Domain_samples.csv',delimiter=",",dtype=float)
 
@@ -50,18 +54,31 @@ plt.plot(samps[0],samps[1],'k.')
 plt.ylim(-0.5,0.5)
 plt.xlim(-0.5,0.5)
 """
-"""
+
 plt.figure()
 #plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
 plt.pcolormesh(xi, yi, phi_approx.reshape(xi.shape))
-plt.plot(x1,x2,'ko',markersize=1)
-plt.title("Reference Distribution", **title_font)
+plt.plot(x1,x2,'ko',markersize=5)
+plt.title("Filtered Noise Input", **title_font)
 plt.xlabel ( r"$x$",**axis_font)
 plt.ylabel ( r"$y$",**axis_font)
 plt.margins(0)
 cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=fontsz)
 cbar.ax.set_ylabel('Density',fontsize=16)
+
+plt.figure()
+#plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
+plt.pcolormesh(xi, yi, phi_approx.reshape(xi.shape))
+plt.plot(xn1,xn2,'ko',markersize=5)
+plt.title("Noise Input", **title_font)
+plt.xlabel ( r"$x$",**axis_font)
+plt.ylabel ( r"$y$",**axis_font)
+plt.margins(0)
+cbar = plt.colorbar()
+cbar.ax.tick_params(labelsize=fontsz)
+cbar.ax.set_ylabel('Density',fontsize=16)
+
 """
 img = cv2.imread("banana.png",cv2.IMREAD_GRAYSCALE)
 plt.figure()
@@ -75,7 +92,7 @@ plt.margins(0)
 #cbar = plt.colorbar()
 #cbar.ax.tick_params(labelsize=fontsz)
 #cbar.ax.set_ylabel('Density',fontsize=16)
-
+"""
 #plt.figure()
 #plt.plot(tlist,data[0:-1,7])
 
