@@ -8,14 +8,14 @@ using namespace std;
 
 #include"SAC_MDA/doubleint.hpp"
 #include"SAC_MDA/dklimg_cost.hpp"
-#include"SAC_MDA/error_cost.hpp"
+//#include"SAC_MDA/error_cost.hpp"
 #include"SAC_MDA/SAC.hpp"
 #include"SAC_MDA/rk4_int.hpp"
 #include"SAC_MDA/MIGMDA.hpp"
-//#include"Virtual_Fixt/imagewalls.hpp"
-//const int SEARCHRAD = 100;
-arma::vec xd(double t){
-        return arma::zeros(4);};
+#include"Virtual_Fixt/imagewalls.hpp"
+const int SEARCHRAD = 100;
+/*arma::vec xd(double t){
+        return arma::zeros(4);};*/
 arma::vec unom(double t){
         return arma::zeros(2,1);};
 
@@ -47,15 +47,10 @@ int main()
     dklcost<DoubleInt> cost (q,R,75,SIGMA,0,2,image,xbound,ybound,T,4.0,&syst1);
     sac<DoubleInt,dklcost<DoubleInt>> sacsys (&syst1,&cost,0.,T,umax,unom);
     migmda<DoubleInt,dklcost<DoubleInt>> demon(&sacsys, false);
-    arma::mat Q = {
-        {0.00001,0.,0.,0.},
-        {0., 0.,0.,0.},
-        {0.,0.,0.00001,0.},
-        {0.,0.,0.,0.}};
-    errorcost<DoubleInt> cost2 (Q,R,xd,&syst1);
-    sac<DoubleInt,errorcost<DoubleInt>> sacsys2 (&syst2,&cost2,0.,T,umax,unom);
-    migmda<DoubleInt,errorcost<DoubleInt>> demon2(&sacsys2, false);
-    //imagewalls walltest(imageName, SEARCHRAD,10.0,10.0);
+    
+    dklcost<DoubleInt> cost2 (q,R,75,SIGMA,0,2,image,xbound,ybound,T,4.0,&syst1);
+    sac<DoubleInt,dklcost<DoubleInt>> sacsys2 (&syst2,&cost2,0.,T,umax,unom);
+    migmda<DoubleInt,dklcost<DoubleInt>> demon2(&sacsys2, false);
  
     arma::vec xwrap;
     uniform_real_distribution<> user(-10,10);

@@ -29,8 +29,8 @@ x1 = (data[50:-1,1])
 x2 = (data[50:-1,3])
 X = np.stack([x1,x2],axis=1)
 
-xn1 = (data[0:-1,9])
-xn2 = (data[0:-1,11])
+xn1 = (data[50:-1,9])
+xn2 = (data[50:-1,11])
 
 
 samps=genfromtxt('/home/kt-fitz/human-ergodicObj/Domain_samples.csv',delimiter=",",dtype=float)
