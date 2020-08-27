@@ -1,0 +1,75 @@
+import numpy as np
+import scipy.integrate as scint
+from numpy import genfromtxt
+import matplotlib.pyplot as plt
+from matplotlib import colors
+from scipy.stats import multivariate_normal
+
+
+L1 = 1.
+L2 =1.
+Sigma = 0.01
+NBINS = 300
+fontsz=14
+title_font = {'fontname':'Liberation Sans', 'size':'20', 'color':'black', 'weight':'normal'}#,'verticalalignment':'bottom'} # Bottom vertical alignment for more space
+axis_font = {'fontname':'Liberation Sans', 'size':'18'}#'21'}
+
+xj, yj = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]
+xi, yi = np.mgrid[-L1/2:L1/2:NBINS*1j, -L2/2:L2/2:NBINS*1j]#np.mgrid[-0.6:0.6:NBINS*1j, -0.6:0.6:NBINS*1j]
+domain = np.transpose(np.vstack([np.linspace(-L1/2,L1/2,NBINS),np.linspace(-L2/2,L2/2,NBINS)]))
+"""
+ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0.001,0.0],[0.0,0.001]]) \
++0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.3,-0.1], cov=[[0.01,0.0],[0.0,0.01]]) \
++0.4*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [0.35,0.3], cov=[[0.001,0.0],[0.0,0.001]])
+"""
+data=genfromtxt('/home/kt-fitz/data/cpp2/s03_umbrella_p_set03-clean.csv',delimiter=",",dtype=float)
+data = np.delete(data,0,0)
+tlist = data[0:-1,0]
+x1 = data[0:-1,18]#+(L1/2.)
+x2 = data[0:-1,19]#+(L2/2.)
+X = np.stack([x1,x2],axis=1)
+
+samps=genfromtxt('/home/kt-fitz/human-ergodicObj/umbrella_samples.csv',delimiter=",",dtype=float)
+
+Nsamp = np.shape(samps)[1]
+phi_approx=samps[2,0]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,0],samps[1,0]], cov=[[Sigma/10,0.0],[0.0,Sigma/10]])
+for i in range(1,Nsamp):
+    phi_approx = phi_approx +samps[2,i]*multivariate_normal.pdf(np.dstack((xi,yi)), mean = [samps[0,i],samps[1,i]], cov=[[Sigma/10,0.0],[0.0,Sigma/10]])
+
+print(np.count_nonzero(samps[2]))
+   
+plt.figure()
+#plt.plot(tlist,data[0:-1,5])
+#plt.plot(tlist,data[0:-1,6])
+plt.plot(samps[0],samps[1],'k.')
+plt.ylim(-0.5,0.5)
+plt.xlim(-0.5,0.5)
+
+
+plt.figure()
+#plt.pcolormesh(xj, yj, ref.reshape(xj.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
+plt.pcolormesh(xi, yi, phi_approx.reshape(xi.shape))
+plt.plot(x1,x2,'ko',markersize=1)
+plt.title("Reference Distribution", **title_font)
+plt.xlabel ( r"$x$",**axis_font)
+plt.ylabel ( r"$y$",**axis_font)
+plt.margins(0)
+cbar = plt.colorbar()
+cbar.ax.tick_params(labelsize=fontsz)
+cbar.ax.set_ylabel('Density',fontsize=16)
+"""
+plt.figure()
+plt.pcolormesh(xi, yi, x_approx.reshape(xi.shape))#,norm=colors.Normalize(vmin=0,vmax=10.0))
+plt.plot(x1,x2,'ko',markersize=1)
+plt.title("Gaussian Approximation of X(t)", **title_font)
+plt.xlabel ( r"$x$",**axis_font)
+plt.ylabel ( r"$y$",**axis_font)
+plt.margins(0)
+cbar = plt.colorbar()
+cbar.ax.tick_params(labelsize=fontsz)
+cbar.ax.set_ylabel('Density',fontsize=16)
+"""
+plt.figure()
+plt.plot(x1,x2)
+
+plt.show()
