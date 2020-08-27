@@ -25,8 +25,8 @@ ref = 0.3*multivariate_normal.pdf(np.dstack((xj,yj)), mean = [-0.2,0.1], cov=[[0
 data=genfromtxt('/home/kt-fitz/data/cpp2/s03_umbrella_p_set03-clean.csv',delimiter=",",dtype=float)
 data = np.delete(data,0,0)
 tlist = data[0:-1,0]
-x1 = data[0:-1,18]#+(L1/2.)
-x2 = data[0:-1,19]#+(L2/2.)
+x2 = data[0:-1,-2]#+(L1/2.)
+x1 = data[0:-1,-3]#+(L2/2.)
 X = np.stack([x1,x2],axis=1)
 
 samps=genfromtxt('/home/kt-fitz/human-ergodicObj/umbrella_samples.csv',delimiter=",",dtype=float)
